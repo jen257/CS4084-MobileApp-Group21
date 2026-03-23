@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "183401756708",
+    "project_id": "cs4084-mobileapp-group21",
+    "storage_bucket": "cs4084-mobileapp-group21.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:183401756708:android:c1aeb941472a4c354e40b1",
+        "android_client_info": {
+          "package_name": "com.example.reloop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOIjJ-zZION6Wh3F_NZK_cn3AscTakips"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
