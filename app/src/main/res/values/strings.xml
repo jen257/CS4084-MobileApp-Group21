@@ -15,4 +15,12 @@
     <string name="error_empty_fields">Please fill in all fields.</string>
     <string name="error_auth_failed">Authentication failed: %s</string>
     <string name="action_logout">Logout</string>
+
+    //  for item_product.xml
+    <string name="no_image">No Image</string>
+    <string name="tag_label">Tag</string>
+    <string name="price_label">Price</string>
+    <string name="description_label">Description</string>
+    <string name="btn_want">Want</string>
+    <string name="btn_want_desc">Action button for purchase</string>
 </resources>
