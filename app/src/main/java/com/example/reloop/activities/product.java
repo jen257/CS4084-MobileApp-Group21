@@ -1,4 +1,4 @@
-package com.example.reloop.models;
+package com.example.reloop.activities;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 import java.io.Serializable;
