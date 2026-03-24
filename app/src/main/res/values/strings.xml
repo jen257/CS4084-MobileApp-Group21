@@ -1,12 +1,18 @@
 <resources>
     <string name="app_name">Reloop</string>
-    <string name="product_title">Product Title</string>
-    <string name="rentable_date">Rentable Date</string>
-    <string name="rentable_range">Jan 1 - Nov 8</string>
-    <string name="purchase_price">Purchase Price</string>
-    <string name="price_value">€100</string>
-    <string name="description">Description</string>
-    <string name="detailed_description">Detailed product description goes here</string>
-    <string name="btn_i_want_it">I WANT IT</string>
-    <string name="product_image_desc">Product Image</string>
+    <string name="title_home">Home</string>
+    <string name="title_wishlist">Wishlist</string>
+
+    <string name="login_title">Welcome Back</string>
+    <string name="register_title">Create Account</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_username">Username</string>
+    <string name="action_sign_in">Sign In</string>
+    <string name="action_register">Register</string>
+    <string name="link_to_register">No account? Register here.</string>
+    <string name="link_to_login">Already have an account? Login here.</string>
+    <string name="error_empty_fields">Please fill in all fields.</string>
+    <string name="error_auth_failed">Authentication failed: %s</string>
+    <string name="action_logout">Logout</string>
 </resources>
