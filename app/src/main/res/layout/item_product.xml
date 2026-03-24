@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    card_view:cardCornerRadius="12dp"
+    card_view:cardElevation="4dp"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- Product Image -->
+        <ImageView
+            android:id="@+id/imgProduct"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_placeholder" />
+
+        <!-- Product Title -->
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Product Title"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#7B1FA2"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Info Cards Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <!-- Card 1: Rentable Date -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="#FCE4EC"
+                android:padding="8dp"
+                android:layout_marginEnd="6dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rentable Date"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="#7B1FA2"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Jan 1 - Nov 8"
+                    android:textSize="12sp"
+                    android:textColor="#000000"/>
+            </LinearLayout>
+
+            <!-- Card 2: Purchase Price -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="#FFF9C4"
+                android:padding="8dp"
+                android:layout_marginStart="6dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Purchase Price"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="#7B1FA2"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="€100"
+                    android:textSize="12sp"
+                    android:textColor="#000000"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Description Title -->
+        <TextView
+            android:id="@+id/txtDescTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#7B1FA2"
+            android:layout_marginTop="10dp"/>
+
+        <!-- Description Content -->
+        <TextView
+            android:id="@+id/txtDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Detailed product description goes here..."
+            android:textSize="14sp"
+            android:textColor="#757575"
+            android:layout_marginTop="4dp"/>
+
+        <!-- Action Button -->
+        <Button
+            android:id="@+id/btnWant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="I WANT IT"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#7B1FA2"
+            android:layout_marginTop="12dp"
+            android:padding="10dp"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
