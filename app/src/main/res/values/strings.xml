@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Reloop</string>
+    <string name="product_title">Product Title</string>
+    <string name="rentable_date">Rentable Date</string>
+    <string name="rentable_range">Jan 1 - Nov 8</string>
+    <string name="purchase_price">Purchase Price</string>
+    <string name="price_value">€100</string>
+    <string name="description">Description</string>
+    <string name="detailed_description">Detailed product description goes here</string>
+    <string name="btn_i_want_it">I WANT IT</string>
+    <string name="product_image_desc">Product Image</string>
 </resources>
