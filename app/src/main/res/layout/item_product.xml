@@ -20,14 +20,15 @@
             android:layout_width="match_parent"
             android:layout_height="180dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_placeholder" />
+            android:src="@drawable/ic_placeholder"
+            android:contentDescription="@string/product_image_desc"/>
 
         <!-- Product Title -->
         <TextView
             android:id="@+id/txtTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Product Title"
+            android:text="@string/product_title"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="#7B1FA2"
@@ -38,6 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:baselineAligned="false"
             android:layout_marginTop="10dp">
 
             <!-- Card 1: Rentable Date -->
@@ -53,7 +55,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Rentable Date"
+                    android:text="@string/rentable_date"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     android:textColor="#7B1FA2"/>
@@ -61,7 +63,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Jan 1 - Nov 8"
+                    android:text="@string/rentable_range"
                     android:textSize="12sp"
                     android:textColor="#000000"/>
             </LinearLayout>
@@ -79,7 +81,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Purchase Price"
+                    android:text="@string/purchase_price"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     android:textColor="#7B1FA2"/>
@@ -87,7 +89,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="€100"
+                    android:text="@string/price_value"
                     android:textSize="12sp"
                     android:textColor="#000000"/>
             </LinearLayout>
@@ -99,7 +101,7 @@
             android:id="@+id/txtDescTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Description"
+            android:text="@string/description"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="#7B1FA2"
@@ -110,7 +112,7 @@
             android:id="@+id/txtDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Detailed product description goes here..."
+            android:text="@string/detailed_description"
             android:textSize="14sp"
             android:textColor="#757575"
             android:layout_marginTop="4dp"/>
@@ -120,7 +122,7 @@
             android:id="@+id/btnWant"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="I WANT IT"
+            android:text="@string/btn_i_want_it"
             android:textAllCaps="true"
             android:textColor="@android:color/white"
             android:backgroundTint="#7B1FA2"
