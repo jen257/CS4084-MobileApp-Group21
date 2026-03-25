@@ -13,12 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp">
+        android:padding="8dp">
 
-        <!-- Column 1: Product Image -->
+        <!-- Product Image -->
         <ImageView
             android:id="@+id/product_image"
             android:layout_width="108dp"
@@ -27,7 +24,7 @@
             android:src="@android:drawable/ic_menu_gallery"
             android:contentDescription="@string/product_image_desc"/>
 
-        <!-- Column 2: Information + Want Button -->
+        <!-- Product Info + Want Button -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -44,9 +41,9 @@
                 android:textColor="#800080"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <!-- Product Description -->
             <TextView
@@ -97,10 +94,10 @@
                 android:text="@string/want_button_text"
                 android:textColor="#000000"
                 android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@id/product_description"
-                app:layout_constraintBottom_toBottomOf="@id/product_price"
+                app:layout_constraintTop_toTopOf="@id/product_category"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:padding="8dp"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
