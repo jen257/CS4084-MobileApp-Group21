@@ -24,4 +24,7 @@
     <string name="product_price">€100</string>
     <string name="want_button_text">Want</string>
     <string name="want_button_desc">Action button for purchase</string>
+
+    <!-- Tag / Filter placeholder -->
+    <string name="tag_label">Tag</string>
 </resources>
