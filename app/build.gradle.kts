@@ -57,4 +57,7 @@ dependencies {
     // Image Loading Library
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+    //to use Picasso
+    implementation("com.squareup.picasso:picasso:2.8")
 }
