@@ -16,11 +16,12 @@
     <string name="error_auth_failed">Authentication failed: %s</string>
     <string name="action_logout">Logout</string>
 
-    //  for item_product.xml
-    <string name="no_image">No Image</string>
-    <string name="tag_label">Tag</string>
-    <string name="price_label">Price</string>
-    <string name="description_label">Description</string>
-    <string name="btn_want">Want</string>
-    <string name="btn_want_desc">Action button for purchase</string>
+    <!-- Item product strings -->
+    <string name="product_image_desc">Product image</string>
+    <string name="product_name">Product Name</string>
+    <string name="product_description">Description here</string>
+    <string name="product_category">Category</string>
+    <string name="product_price">€100</string>
+    <string name="want_button_text">Want</string>
+    <string name="want_button_desc">Action button for purchase</string>
 </resources>
