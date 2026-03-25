@@ -21,36 +21,46 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize Bottom Navigation and NavHost
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav_view);
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
 
         if (navHostFragment != null) {
             navController = navHostFragment.getNavController();
+            // Link BottomNavigationView with NavController
             NavigationUI.setupWithNavController(bottomNav, navController);
 
-            // Hide Bottom Nav on Login & Register screens
+            // Control BottomNav visibility based on current destination
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+                // Hide BottomNav on Auth screens (Login/Register)
                 if (destination.getId() == R.id.loginFragment || destination.getId() == R.id.registerFragment) {
                     bottomNav.setVisibility(View.GONE);
                 } else {
+                    // Show BottomNav on main screens (Home/Wishlist)
                     bottomNav.setVisibility(View.VISIBLE);
                 }
             });
         }
     }
 
-    // Logout
+    // Create options menu for Logout
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // Add logout item to the menu
         menu.add(0, 1, 0, R.string.action_logout).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
         return true;
     }
 
+    // Handle menu item clicks
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // Check if Logout was clicked
         if (item.getItemId() == 1) {
+            // Sign out from Firebase
             FirebaseAuth.getInstance().signOut();
-            // Navigate back to login and clear stack
+
+            // Redirect to Login screen and clear navigation history
             if (navController != null) {
                 navController.navigate(R.id.loginFragment);
             }
