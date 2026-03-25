@@ -1,4 +1,4 @@
-package com.example.reloop.activities;
+package com.example.reloop.ui.home.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
