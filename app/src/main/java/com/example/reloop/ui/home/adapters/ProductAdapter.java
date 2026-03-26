@@ -7,28 +7,34 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.reloop.R;
+import com.example.reloop.database.AppDataBase;
+import com.example.reloop.database.ProductDao;
+import com.example.reloop.database.ProductEntity;
+import com.example.reloop.models.Product;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
     private Context context;
-    private List<product> productList;
+    private List<Product> productList;
 
     // Click listener for "Want" button
     public interface OnWantClickListener {
-        void onWantClick(product p);
+        void onWantClick(Product p);
     }
 
     private OnWantClickListener listener;
 
-    public ProductAdapter(Context context, List<product> productList, OnWantClickListener listener) {
+    public ProductAdapter(Context context, List<Product> productList, OnWantClickListener listener) {
         this.context = context;
         this.productList = productList;
         this.listener = listener;
@@ -43,41 +49,38 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
-
-        product p = productList.get(position);
+        Product p = productList.get(position);
 
         // Title
-        holder.txtTitle.setText(p.title);
+        holder.txtTitle.setText(p.getTitle());
 
-        // Tag (category)
-        holder.txtTagValue.setText(p.category);
+        // Category
+        holder.txtCategory.setText(p.getCategory());
 
         // Price
-        holder.txtPriceValue.setText("€ " + p.price);
+        holder.txtPrice.setText("€ " + p.getPrice());
 
         // Description
-        holder.txtDescription.setText(p.description);
+        holder.txtDescription.setText(p.getDescription());
 
         // Image (Glide)
-        if (p.imageUrl != null && !p.imageUrl.isEmpty()) {
+        if (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) {
             holder.imgProduct.setVisibility(View.VISIBLE);
-            holder.txtPlaceholder.setVisibility(View.GONE);
-
             Glide.with(context)
-                    .load(p.imageUrl)
+                    .load(p.getImageUrl())
                     .centerCrop()
                     .into(holder.imgProduct);
-
         } else {
-            holder.imgProduct.setVisibility(View.GONE);
-            holder.txtPlaceholder.setVisibility(View.VISIBLE);
+            holder.imgProduct.setVisibility(View.VISIBLE);
+            holder.imgProduct.setImageResource(android.R.drawable.ic_menu_gallery);
         }
 
-        // Button click
+        // Button click listener for "Want" button
         holder.btnWant.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onWantClick(p);
             }
+            addToWishlist(p, holder);
         });
     }
 
@@ -86,25 +89,78 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         return productList.size();
     }
 
+    private void addToWishlist(Product product, ProductViewHolder holder) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                // 1. Convert Product to ProductEntity
+                ProductEntity entity = ProductEntity.fromCloudProduct(product);
+
+                // 2. Get database instance
+                AppDataBase db = AppDataBase.getInstance(context);
+                ProductDao dao = db.productDao();
+
+                // 3. Check if already exists
+                boolean exists = dao.isProductInWishlist(entity.getPid());
+
+                if (!exists) {
+                    // 4. Insert into database
+                    dao.insert(entity);
+
+                    // 5. UI feedback (main thread)
+                    ((android.app.Activity) context).runOnUiThread(() -> {
+                        Toast.makeText(context, "Added to wishlist!", Toast.LENGTH_SHORT).show();
+                        updateHeartIcon(holder.btnWant, true);
+                    });
+                } else {
+                    ((android.app.Activity) context).runOnUiThread(() ->
+                            Toast.makeText(context, "Already in wishlist", Toast.LENGTH_SHORT).show());
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                ((android.app.Activity) context).runOnUiThread(() ->
+                        Toast.makeText(context, "Failed to add to wishlist", Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
+    private void updateHeartIcon(Button button, boolean isInWishlist) {
+        if (isInWishlist) {
+            button.setText("♥ Saved");
+            button.setTextColor(0xFFFF4444); // Red color
+        } else {
+            button.setText("♡ Save");
+            button.setTextColor(0xFF666666); // Gray color
+        }
+    }
+
     // ViewHolder
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
-
         ImageView imgProduct;
-        TextView txtPlaceholder, txtTitle, txtTagValue, txtPriceValue, txtDescription;
+        TextView txtTitle, txtCategory, txtPrice, txtDescription;
         Button btnWant;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            imgProduct = itemView.findViewById(R.id.imgProduct);
-            txtPlaceholder = itemView.findViewById(R.id.txtImagePlaceholder);
-
-            txtTitle = itemView.findViewById(R.id.txtTitle);
-            txtTagValue = itemView.findViewById(R.id.txtTagValue);
-            txtPriceValue = itemView.findViewById(R.id.txtPriceValue);
-            txtDescription = itemView.findViewById(R.id.txtDescription);
-
-            btnWant = itemView.findViewById(R.id.btnWant);
+            imgProduct = itemView.findViewById(R.id.product_image);
+            txtTitle = itemView.findViewById(R.id.product_title);
+            txtCategory = itemView.findViewById(R.id.product_category);
+            txtPrice = itemView.findViewById(R.id.product_price);
+            txtDescription = itemView.findViewById(R.id.product_description);
+            btnWant = itemView.findViewById(R.id.want_button);
         }
+    }
+
+    public void updateData(List<Product> newProductList) {
+        this.productList = newProductList;
+        notifyDataSetChanged();
+    }
+
+    public Product getProductAt(int position) {
+        if (position >= 0 && position < productList.size()) {
+            return productList.get(position);
+        }
+        return null;
     }
 }
