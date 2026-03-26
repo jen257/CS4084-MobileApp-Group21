@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,18 +15,27 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.reloop.R;
 import com.example.reloop.models.Product;
+import com.example.reloop.utils.FireBaseHelper; // Ensure the case matches your file (FirebaseHelper)
 import com.example.reloop.ui.home.adapters.ProductAdapter;
-import com.example.reloop.utils.FireBaseHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * [Member C - UI/Fragment Implementation]
+ * HomeFragment displays the main product feed for the Reloop Marketplace.
+ * Integrated with Member A's FirebaseHelper to fetch real-time data.
+ */
 public class HomeFragment extends Fragment {
 
+    // --- UI Components ---
     private RecyclerView recyclerView;
     private ProductAdapter adapter;
+
+    // --- Data Storage ---
     private List<Product> productList;
 
+    // --- Utilities ---
     private FireBaseHelper firebaseHelper;
 
     @Nullable
@@ -33,45 +43,66 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
+        // 1. Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        //  Bind RecyclerView
-        recyclerView = root.findViewById(R.id.recycler_home_products);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        // 2. Initialize UI Components
+        setupRecyclerView(root);
 
-        // Initialize data list
-        productList = new ArrayList<>();
-
-        //  Initialize Adapter
-        adapter = new ProductAdapter(getContext(), productList);
-        recyclerView.setAdapter(adapter);
-
-        //  Initialize FirebaseHelper
+        // 3. Initialize Firebase Utility (Member A's Architecture)
         firebaseHelper = new FireBaseHelper();
 
-        //  Load data from cloud
-        loadProducts();
+        // 4. Fetch data from the cloud
+        loadProductsFromFirebase();
 
         return root;
     }
 
-    private void loadProducts() {
+    /**
+     * Standard setup for the RecyclerView and its Adapter.
+     */
+    private void setupRecyclerView(View root) {
+        recyclerView = root.findViewById(R.id.recycler_home_products);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        firebaseHelper.getAllProducts(new FireBaseHelper.ProductCallback() {
+        // Initialize list and bind it to the adapter
+        productList = new ArrayList<>();
+        adapter = new ProductAdapter(getContext(), productList);
+        recyclerView.setAdapter(adapter);
+    }
+
+    /**
+     * [Data Integration]
+     * Calls the global FirebaseHelper to retrieve the latest product listings.
+     */
+    private void loadProductsFromFirebase() {
+
+        // Using the standardized callback interface defined in FirebaseHelper
+        firebaseHelper.getAllProducts(new FireBaseHelper.FirebaseCallback() {
 
             @Override
             public void onSuccess(List<Product> products) {
-                Log.d("HomeFragment", "Products loaded: " + products.size());
+                if (products != null) {
+                    Log.d("HomeFragment", "Successfully loaded " + products.size() + " items.");
 
-                productList.clear();
-                productList.addAll(products);
+                    // Clear existing data to avoid duplicates
+                    productList.clear();
 
-                adapter.notifyDataSetChanged();
+                    // Add new data and refresh the UI thread
+                    productList.addAll(products);
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override
-            public void onFailure(String error) {
-                Log.e("HomeFragment", "Error loading products: " + error);
+            public void onError(String error) {
+                // Log error for debugging (Member A)
+                Log.e("HomeFragment", "Database Error: " + error);
+
+                // Show user-friendly toast message
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "Failed to sync with cloud: " + error, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
