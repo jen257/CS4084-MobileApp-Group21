@@ -27,4 +27,6 @@
 
     <!-- Tag / Filter placeholder -->
     <string name="tag_label">Tag</string>
+    <string name="your_wishlist_is_empty_click_the_heart_on_products_to_collect" />
+    <string name="my_wishlist">My wishlist</string>
 </resources>
