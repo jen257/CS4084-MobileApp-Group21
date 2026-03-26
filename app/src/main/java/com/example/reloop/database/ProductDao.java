@@ -26,7 +26,7 @@ public interface ProductDao {
 
     // Delete product from wishlist
     @Delete
-    void delete(ProductEntity product);
+    void deleteProduct(ProductEntity product);
 
     // Query all wishlist products
     @Query("SELECT * FROM wishlist_products")
