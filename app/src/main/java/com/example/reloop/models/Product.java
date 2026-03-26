@@ -2,6 +2,7 @@ package com.example.reloop.models;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Core product model for the marketplace.
@@ -17,11 +18,11 @@ public class Product implements Serializable {
     public String imageUrl;
     public String price;
     public String category;     // e.g. Electronics, Furniture
-    public long timestamp;
     public boolean isSold;      // Track if item is still available
 
     // Default constructor for Firebase DataSnapshot
     public Product() {
+        // Firebase requires empty constructor
     }
 
     // For creating new listings in PostProductFragment
@@ -34,7 +35,87 @@ public class Product implements Serializable {
         this.category = category;
         this.imageUrl = imageUrl;
         this.sellerId = sellerId;
-        this.timestamp = System.currentTimeMillis();
         this.isSold = false;
+    }
+
+    // Getter methods
+    public String getPid() { return pid; }
+    public String getSellerId() { return sellerId; }
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public String getImageUrl() { return imageUrl; }
+    public String getPrice() { return price; }
+    public String getCategory() { return category; }
+    public boolean isSold() { return isSold; }
+
+    // Setter methods
+    public void setPid(String pid) { this.pid = pid; }
+    public void setSellerId(String sellerId) { this.sellerId = sellerId; }
+    public void setTitle(String title) { this.title = title; }
+    public void setDescription(String description) { this.description = description; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public void setPrice(String price) { this.price = price; }
+    public void setCategory(String category) { this.category = category; }
+    public void setSold(boolean sold) { isSold = sold; }
+
+    // Utility method: Convert price string to double for calculations
+    public double getPriceAsDouble() {
+        if (price == null || price.isEmpty()) return 0.0;
+        try {
+            // Remove currency symbols and commas, then parse
+            String cleanPrice = price.replaceAll("[^\\d.]", "");
+            return Double.parseDouble(cleanPrice);
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
+    }
+
+    // Utility method: Format price with currency symbol
+    public String getFormattedPrice() {
+        if (price == null || price.isEmpty()) return "€0";
+        if (price.startsWith("€")) return price;
+        return "€" + price;
+    }
+
+    // Check if product is available (not sold)
+    public boolean isAvailable() {
+        return !isSold;
+    }
+
+    // Convert to simplified string for logging
+    public String toShortString() {
+        return title + " - " + getFormattedPrice();
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "pid='" + pid + '\'' +
+                ", title='" + title + '\'' +
+                ", price='" + price + '\'' +
+                ", category='" + category + '\'' +
+                ", isSold=" + isSold +
+                '}';
+    }
+
+    // Equality based on product ID
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return Objects.equals(pid, product.pid);
+    }
+
+    @Override
+    public int hashCode() {
+        return pid != null ? pid.hashCode() : 0;
+    }
+
+    // Static factory method for creating new products
+    public static Product createNew(String title, String description, String price,
+                                    String category, String imageUrl, String sellerId) {
+        // Firebase will generate the PID when we push()
+        return new Product(null, title, description, price, category, imageUrl, sellerId);
     }
 }
