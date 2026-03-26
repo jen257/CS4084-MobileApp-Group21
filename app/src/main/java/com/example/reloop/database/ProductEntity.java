@@ -1,37 +1,41 @@
 package com.example.reloop.database;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.example.reloop.models.Product;
+import com.example.reloop.utils.Constants;
 
 import java.util.Objects;
 
-/**
- * Wishlist product entity class
- * Corresponds to the wishlist_products table in local database
- */
-@Entity(tableName = "wishlist_products",
-        indices = {@Index(value = "pid", unique = true)})
+// This class represents a product saved in the local wishlist (Room database)
+@Entity(
+        tableName = Constants.TABLE_WISHLIST,
+        indices = {@Index(value = "pid", unique = true)} // make sure no duplicate products
+)
 public class ProductEntity {
-    @PrimaryKey
-    private String pid;          // Product ID (Primary Key)
-    private String title;        // Product title
-    private String price;        // Price (String format to match cloud)
-    private String description;  // Product description
-    private String imageUrl;     // Image URL
-    private String category;     // Product category
-    private boolean isFavorite;  // Favorite status
 
-    // Default constructor (required by Room)
+    @PrimaryKey
+    @NonNull
+    private String pid; // product ID (same as Firebase)
+
+    private String title;
+    private String price;
+    private String description;
+    private String imageUrl;
+    private String category;
+    private boolean isFavorite; // used to mark if it's still in wishlist
+
+    // Required empty constructor for Room
     public ProductEntity() {
         this.isFavorite = true;
     }
 
-    // Full parameter constructor
-    public ProductEntity(String pid, String title, String price, String description,
-                         String imageUrl, String category) {
+    // Constructor used when creating a new entity manually
+    public ProductEntity(String pid, String title, String price,
+                         String description, String imageUrl, String category) {
         this.pid = pid;
         this.title = title;
         this.price = price;
@@ -41,7 +45,7 @@ public class ProductEntity {
         this.isFavorite = true;
     }
 
-    // Getter methods
+    // Getters
     public String getPid() { return pid; }
     public String getTitle() { return title; }
     public String getPrice() { return price; }
@@ -50,7 +54,7 @@ public class ProductEntity {
     public String getCategory() { return category; }
     public boolean isFavorite() { return isFavorite; }
 
-    // Setter methods
+    // Setters
     public void setPid(String pid) { this.pid = pid; }
     public void setTitle(String title) { this.title = title; }
     public void setPrice(String price) { this.price = price; }
@@ -59,28 +63,46 @@ public class ProductEntity {
     public void setCategory(String category) { this.category = category; }
     public void setFavorite(boolean favorite) { isFavorite = favorite; }
 
-    // Utility method: Convert to simplified string representation
-    public String toShortString() {
+    // Convert Firebase Product -> local Room entity
+    public static ProductEntity fromCloudProduct(Product p) {
+        if (p == null) return null;
+
+        ProductEntity entity = new ProductEntity();
+        entity.setPid(p.getPid());
+        entity.setTitle(p.getTitle());
+        entity.setPrice(p.getPrice());
+        entity.setDescription(p.getDescription());
+        entity.setImageUrl(p.getImageUrl());
+        entity.setCategory(p.getCategory());
+        entity.setFavorite(true);
+
+        return entity;
+    }
+
+    // Convert back to Product model (not really needed now, but useful later)
+    public Product toCloudProduct() {
+        Product p = new Product();
+        p.setPid(pid);
+        p.setTitle(title);
+        p.setPrice(price);
+        p.setDescription(description);
+        p.setImageUrl(imageUrl);
+        p.setCategory(category);
+        p.setSellerId("local_user"); // placeholder
+        p.setSold(false);
+        return p;
+    }
+
+    @Override
+    public String toString() {
         return title + " - " + price;
     }
 
-    // Debug toString method
-    @Override
-    public String toString() {
-        return "ProductEntity{" +
-                "pid='" + pid + '\'' +
-                ", title='" + title + '\'' +
-                ", price='" + price + '\'' +
-                ", category='" + category + '\'' +
-                ", isFavorite=" + isFavorite +
-                '}';
-    }
-
-    // Equality based on product ID
+    // Compare based on product ID
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ProductEntity)) return false;
         ProductEntity that = (ProductEntity) o;
         return Objects.equals(pid, that.pid);
     }
@@ -88,34 +110,5 @@ public class ProductEntity {
     @Override
     public int hashCode() {
         return pid != null ? pid.hashCode() : 0;
-    }
-
-    // Static method: Convert from cloud Product to local Entity
-    public static ProductEntity fromCloudProduct(Product cloudProduct) {
-        if (cloudProduct == null) return null;
-
-        // Use public fields directly for Firebase compatibility
-        return new ProductEntity(
-                cloudProduct.pid,        // Direct field access
-                cloudProduct.title,      // Direct field access
-                cloudProduct.price,      // Direct field access
-                cloudProduct.description, // Direct field access
-                cloudProduct.imageUrl,   // Direct field access
-                cloudProduct.category    // Direct field access
-        );
-    }
-
-    // Convert back to cloud Product model
-    public Product toCloudProduct() {
-        Product product = new Product();
-        product.pid = this.pid;
-        product.title = this.title;
-        product.price = this.price;
-        product.description = this.description;
-        product.imageUrl = this.imageUrl;
-        product.category = this.category;
-        product.isSold = false; // Default for wishlist items
-        product.sellerId = "wishlist_user"; // Placeholder for wishlist items
-        return product;
     }
 }

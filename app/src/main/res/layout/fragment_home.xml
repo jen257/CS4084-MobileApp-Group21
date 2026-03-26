@@ -1,47 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/home_fragment_root"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="@color/app_background">
 
-    <!-- Top Banner -->
     <ImageView
         android:id="@+id/home_banner"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="centerCrop"
-        android:src="@android:drawable/ic_menu_gallery"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/home_banner_placeholder"
+        app:layout_constraintHeight_percent="0.25"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.25"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_top_toTopOf="parent"
+        tools:src="@android:drawable/ic_menu_gallery" />
 
-    <!-- Horizontal Layout Container -->
-    <LinearLayout
-        android:id="@+id/content_container"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/section_tags"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/home_banner"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@color/app_background"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/recycler_home_products"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_top_toBottomOf="@id/home_banner">
 
-        <!-- Left Tag Section -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#FFFFFF" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:text="Tags"
+            android:textColor="@color/main_text"
+            android:textStyle="bold" />
 
-        <!-- Right RecyclerView Section -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="3"/>
-    </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_home_products"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="3"
+        app:layout_constraintStart_toEndOf="@id/section_tags"
+        app:layout_top_toBottomOf="@id/home_banner"
+        tools:listitem="@layout/item_product" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
