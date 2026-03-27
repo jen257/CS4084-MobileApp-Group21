@@ -68,7 +68,7 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
 
     private void removeFromWishlist(ProductEntity product, int position) {
         executor.execute(() -> {
-            db.productDao().deleteProduct(product);
+            db.productDao().delete(product);
 
             // Update on UI thread
             if (context instanceof Activity) {
