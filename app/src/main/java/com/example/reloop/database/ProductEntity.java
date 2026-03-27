@@ -2,6 +2,7 @@ package com.example.reloop.database;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -34,6 +35,11 @@ public class ProductEntity {
     }
 
     // Constructor used when creating a new entity manually
+    /**
+     * Secondary constructor for manual object creation.
+     * @Ignore tells Room to bypass this constructor to avoid ambiguity.
+     */
+    @Ignore
     public ProductEntity(String pid, String title, String price,
                          String description, String imageUrl, String category) {
         this.pid = pid;

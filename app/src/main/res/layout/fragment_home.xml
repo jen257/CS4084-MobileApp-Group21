@@ -31,7 +31,7 @@
         app:layout_constraintEnd_toStartOf="@+id/recycler_home_products"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_top_toBottomOf="@id/home_banner">
+        app:layout_constraintTop_toBottomOf="@id/home_banner">
 
         <TextView
             android:layout_width="wrap_content"
@@ -55,7 +55,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="3"
         app:layout_constraintStart_toEndOf="@id/section_tags"
-        app:layout_top_toBottomOf="@id/home_banner"
+        app:layout_constraintTop_toBottomOf="@id/home_banner"
         tools:listitem="@layout/item_product" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
