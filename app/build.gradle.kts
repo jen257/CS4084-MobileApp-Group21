@@ -31,6 +31,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -60,4 +64,10 @@ dependencies {
 
     //to use Picasso
     implementation("com.squareup.picasso:picasso:2.8")
+
+    // Google Maps
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+
+    // For location services
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 }

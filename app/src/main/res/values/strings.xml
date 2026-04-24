@@ -29,4 +29,29 @@
     <string name="tag_label">Tag</string>
     <string name="your_wishlist_is_empty_click_the_heart_on_products_to_collect" />
     <string name="my_wishlist">My wishlist</string>
+
+    <!-- Map View Strings -->
+    <string name="map_view_title">Map View</string>
+    <string name="map_coming_soon">Location features coming soon</string>
+
+    <!-- Loading Button Strings -->
+    <string name="loading"> Loading…</string>
+
+    <!-- Product Card Strings -->
+    <string name="product_available">Available</string>
+    <string name="product_sold">Sold</string>
+    <string name="seller_prefix">Seller ID:</string>
+    <string name="map_view">Map View</string>
+    <string name="Map">Map View</string>
+
+    <!-- Product Card -->
+    <string name="seller_id_format">Seller ID: %s</string>
+
+    <!-- Button -->
+    <string name="button_default">Button</string>
+    <string name="login_button">Login</string>
+    <string name="register_button">Register</string>
+    <string name="submit_button">Submit</string>
+    <string name="save_button">Save</string>
+    <string name="cancel_button">Cancel</string>
 </resources>
