@@ -22,7 +22,7 @@ public class Product implements Serializable {
     public String category;     // Item category (e.g., Electronics, Clothing)
     public boolean isSold;      // Availability status (True if item is no longer for sale)
 
-    // 🆕 新增：地理位置对象
+
     public Location location;   // Geographical location of the product
 
     /**

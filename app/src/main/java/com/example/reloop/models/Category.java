@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 /**
  * [Member A - System Architect]
- * Data Model representing a product category.
+ * Data Model representing a product category
  */
 @IgnoreExtraProperties
 public class Category implements Serializable {
