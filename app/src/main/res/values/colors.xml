@@ -1,5 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="primary_brand">#2E7D32</color>
     <color name="app_background">#FFFFFF</color>
     <color name="main_text">#000000</color>
+
+    <color name="gray_light">#F5F5F5</color>
+    <color name="primary">#2E7D32</color>
+    <color name="gray_dark">#424242</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray_medium">#9E9E9E</color>
+    <color name="red">#F44336</color>
+    <color name="green">#4CAF50</color>
 </resources>
