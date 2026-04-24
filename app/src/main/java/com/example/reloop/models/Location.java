@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 /**
  * [Member A - System Architect]
- * Data Model representing a geographical location.
+ * Data Model representing a geographical location
  */
 @IgnoreExtraProperties
 public class Location implements Serializable {
