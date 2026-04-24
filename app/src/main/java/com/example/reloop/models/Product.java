@@ -7,10 +7,7 @@ import java.util.Objects;
 /**
  * [Member A - System Architect]
  * Core Data Model representing a Product in the Reloop Marketplace.
- * This class is designed to be compatible with Firebase Realtime Database
- * and supports conversion to Room Entities for local storage.
- * * Implements Serializable to allow passing Product objects between
- * Fragments via Bundles (Member C/D Navigation).
+ * Extended with Geo-location support for Map feature.
  */
 @IgnoreExtraProperties
 public class Product implements Serializable {
@@ -25,6 +22,9 @@ public class Product implements Serializable {
     public String category;     // Item category (e.g., Electronics, Clothing)
     public boolean isSold;      // Availability status (True if item is no longer for sale)
 
+    // 🆕 新增：地理位置对象
+    public Location location;   // Geographical location of the product
+
     /**
      * Required default constructor for Firebase DataSnapshot.getValue(Product.class)
      */
@@ -35,7 +35,7 @@ public class Product implements Serializable {
      * Full constructor for manual object creation.
      */
     public Product(String pid, String title, String description, String price,
-                   String category, String imageUrl, String sellerId) {
+                   String category, String imageUrl, String sellerId, Location location) {
         this.pid = pid;
         this.title = title;
         this.description = description;
@@ -43,6 +43,7 @@ public class Product implements Serializable {
         this.category = category;
         this.imageUrl = imageUrl;
         this.sellerId = sellerId;
+        this.location = location;
         this.isSold = false; // Default status is always Available
     }
 
@@ -56,6 +57,7 @@ public class Product implements Serializable {
     public String getPrice() { return price; }
     public String getCategory() { return category; }
     public boolean isSold() { return isSold; }
+    public Location getLocation() { return location; } // 🆕 新增 Getter
 
     public void setPid(String pid) { this.pid = pid; }
     public void setSellerId(String sellerId) { this.sellerId = sellerId; }
@@ -65,14 +67,10 @@ public class Product implements Serializable {
     public void setPrice(String price) { this.price = price; }
     public void setCategory(String category) { this.category = category; }
     public void setSold(boolean sold) { isSold = sold; }
+    public void setLocation(Location location) { this.location = location; } // 🆕 新增 Setter
 
-    // ===== Utility Methods (Extra Credit Features) =====
+    // ===== Utility Methods =====
 
-    /**
-     * Converts the string-based price to a double for numerical operations.
-     * Removes non-numeric characters like "€" or commas.
-     * @return double representation of price, or 0.0 if invalid.
-     */
     public double getPriceAsDouble() {
         if (price == null || price.isEmpty()) return 0.0;
         try {
@@ -83,22 +81,14 @@ public class Product implements Serializable {
         }
     }
 
-    /**
-     * Formats the price for UI display.
-     * Ensures the Euro symbol is present.
-     */
     public String getFormattedPrice() {
         if (price == null || price.isEmpty()) return "€0";
         return price.startsWith("€") ? price : "€" + price;
     }
 
-    /**
-     * Helper to check availability status.
-     */
     public boolean isAvailable() {
         return !isSold;
     }
-
 
     // ===== Standard Overrides =====
 
@@ -124,7 +114,7 @@ public class Product implements Serializable {
      * Static factory method for creating new product instances before pushing to Firebase.
      */
     public static Product createNew(String title, String description, String price,
-                                    String category, String imageUrl, String sellerId) {
-        return new Product(null, title, description, price, category, imageUrl, sellerId);
+                                    String category, String imageUrl, String sellerId, Location location) {
+        return new Product(null, title, description, price, category, imageUrl, sellerId, location);
     }
 }
