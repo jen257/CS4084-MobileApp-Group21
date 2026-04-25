@@ -5,33 +5,29 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import com.example.reloop.R;
-import com.example.reloop.models.User;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.example.reloop.shared.views.LoadingButton;
+import com.example.reloop.ui.auth.viewmodel.AuthViewModel;
 
+/**
+ * Fragment responsible for user registration interface.
+ */
 public class RegisterFragment extends Fragment {
 
-    // Firebase instances
-    private FirebaseAuth mAuth;
-    private DatabaseReference mDatabase;
-
-    // UI Elements
-    private EditText etUsername, etEmail, etPassword;
+    private AuthViewModel authViewModel;
+    private EditText etEmail, etPassword, etConfirmPassword;
+    private LoadingButton btnRegister;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_register, container, false);
     }
 
@@ -39,56 +35,60 @@ public class RegisterFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize Firebase
-        mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference("Users");
+        authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
         // Bind UI components
-        etUsername = view.findViewById(R.id.etUsername);
         etEmail = view.findViewById(R.id.etEmail);
         etPassword = view.findViewById(R.id.etPassword);
-        Button btnRegister = view.findViewById(R.id.btnRegister);
+        etConfirmPassword = view.findViewById(R.id.etConfirmPassword);
+        btnRegister = view.findViewById(R.id.btnRegister);
         TextView tvGoToLogin = view.findViewById(R.id.tvGoToLogin);
 
-        // Set listeners
-        btnRegister.setOnClickListener(v -> registerUser(view));
+        btnRegister.setText("Register");
 
+        setupObservers(view);
+
+        btnRegister.setOnButtonClickListener(v -> {
+            String email = etEmail.getText().toString().trim();
+            String password = etPassword.getText().toString().trim();
+            String confirmPassword = etConfirmPassword.getText().toString().trim();
+
+            if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+                Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!password.equals(confirmPassword)) {
+                Toast.makeText(getContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Delegate to ViewModel for registration
+            authViewModel.register(email, password);
+        });
+
+        // Navigate back to LoginFragment
         tvGoToLogin.setOnClickListener(v ->
-                Navigation.findNavController(view).navigate(R.id.action_registerFragment_to_loginFragment)
+                Navigation.findNavController(view).popBackStack()
         );
     }
 
-    private void registerUser(View view) {
-        String username = etUsername.getText().toString().trim();
-        String email = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
+    private void setupObservers(View view) {
+        // Fixed Statement lambda can be replaced with expression lambda
+        authViewModel.isLoading.observe(getViewLifecycleOwner(), isLoading ->
+                btnRegister.setLoading(isLoading)
+        );
 
-        // 1. Validate input fields
-        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-            Toast.makeText(getContext(), getString(R.string.error_empty_fields), Toast.LENGTH_SHORT).show();
-            return;
-        }
+        authViewModel.errorMessage.observe(getViewLifecycleOwner(), error -> {
+            if (error != null) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+            }
+        });
 
-        // 2. Create user in Firebase Auth
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(requireActivity(), task -> {
-                    if (task.isSuccessful()) {
-                        FirebaseUser fUser = mAuth.getCurrentUser();
-                        if (fUser != null) {
-                            // 3. Save additional user info to Realtime Database
-                            User newUser = new User(fUser.getUid(), username, email);
-                            mDatabase.child(fUser.getUid()).setValue(newUser)
-                                    .addOnCompleteListener(dbTask -> {
-                                        if(dbTask.isSuccessful()) {
-                                            // 4. Navigate to Home on success
-                                            Navigation.findNavController(view).navigate(R.id.action_registerFragment_to_homeFragment);
-                                        }
-                                    });
-                        }
-                    } else {
-                        // Show error message if Auth fails
-                        Toast.makeText(getContext(), String.format(getString(R.string.error_auth_failed), task.getException().getMessage()), Toast.LENGTH_LONG).show();
-                    }
-                });
+        authViewModel.getAuthState().observe(getViewLifecycleOwner(), isAuthenticated -> {
+            if (isAuthenticated != null && isAuthenticated) {
+                Navigation.findNavController(view).navigate(R.id.action_registerFragment_to_homeFragment);
+            }
+        });
     }
 }
