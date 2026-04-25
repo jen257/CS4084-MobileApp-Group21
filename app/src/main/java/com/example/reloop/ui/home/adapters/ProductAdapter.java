@@ -26,13 +26,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     private Context context;
     private List<Product> productList;
+    private OnWantClickListener listener;
 
-    // Click listener for "Want" button
     public interface OnWantClickListener {
         void onWantClick(Product p);
     }
-
-    private OnWantClickListener listener;
 
     public ProductAdapter(Context context, List<Product> productList, OnWantClickListener listener) {
         this.context = context;
@@ -43,6 +41,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Use the original layout
         View view = LayoutInflater.from(context).inflate(R.layout.item_product, parent, false);
         return new ProductViewHolder(view);
     }
@@ -51,19 +50,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Product p = productList.get(position);
 
-        // Title
+        // Reuse manual binding logic
         holder.txtTitle.setText(p.getTitle());
-
-        // Category
         holder.txtCategory.setText(p.getCategory());
-
-        // Price
         holder.txtPrice.setText("€ " + p.getPrice());
-
-        // Description
         holder.txtDescription.setText(p.getDescription());
 
-        // Image (Glide)
+        // Image loading logic
         if (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) {
             holder.imgProduct.setVisibility(View.VISIBLE);
             Glide.with(context)
@@ -75,7 +68,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             holder.imgProduct.setImageResource(android.R.drawable.ic_menu_gallery);
         }
 
-        // Button click listener for "Want" button
+        // "Want" button click logic
         holder.btnWant.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onWantClick(p);
@@ -92,21 +85,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     private void addToWishlist(Product product, ProductViewHolder holder) {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                // 1. Convert Product to ProductEntity
                 ProductEntity entity = ProductEntity.fromCloudProduct(product);
-
-                // 2. Get database instance
                 AppDataBase db = AppDataBase.getInstance(context);
                 ProductDao dao = db.productDao();
 
-                // 3. Check if already exists
                 boolean exists = dao.isProductInWishlist(entity.getPid());
 
                 if (!exists) {
-                    // 4. Insert into database
                     dao.insert(entity);
-
-                    // 5. UI feedback (main thread)
                     ((android.app.Activity) context).runOnUiThread(() -> {
                         Toast.makeText(context, "Added to wishlist!", Toast.LENGTH_SHORT).show();
                         updateHeartIcon(holder.btnWant, true);
@@ -127,14 +113,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     private void updateHeartIcon(Button button, boolean isInWishlist) {
         if (isInWishlist) {
             button.setText("♥ Saved");
-            button.setTextColor(0xFFFF4444); // Red color
+            button.setTextColor(0xFFFF4444);
         } else {
             button.setText("♡ Save");
-            button.setTextColor(0xFF666666); // Gray color
+            button.setTextColor(0xFF666666);
         }
     }
 
-    // ViewHolder
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
         ImageView imgProduct;
         TextView txtTitle, txtCategory, txtPrice, txtDescription;
@@ -142,7 +127,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
-
             imgProduct = itemView.findViewById(R.id.product_image);
             txtTitle = itemView.findViewById(R.id.product_title);
             txtCategory = itemView.findViewById(R.id.product_category);
@@ -155,12 +139,5 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public void updateData(List<Product> newProductList) {
         this.productList = newProductList;
         notifyDataSetChanged();
-    }
-
-    public Product getProductAt(int position) {
-        if (position >= 0 && position < productList.size()) {
-            return productList.get(position);
-        }
-        return null;
     }
 }

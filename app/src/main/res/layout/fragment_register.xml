@@ -1,61 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Root layout: vertical arrangement, center aligned, with 32dp padding -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center">
 
-    <!-- Title text: Register -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/register_title"
+        android:text="Register"
+        tools:ignore="HardcodedText"
+        android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="32dp"/>
 
-    <!-- Username input field -->
-    <EditText
-        android:id="@+id/etUsername"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/prompt_username"
-        android:inputType="textPersonName"
-        android:layout_marginBottom="16dp"/>
-
-    <!-- Email input field -->
     <EditText
         android:id="@+id/etEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/prompt_email"
+        android:minHeight="48dp"
+        android:hint="Email"
+        android:textColor="#000000"
+        android:textColorHint="#5A5A5A"
+        tools:ignore="HardcodedText"
         android:inputType="textEmailAddress"
+        android:autofillHints="emailAddress"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Password input field (masked) -->
     <EditText
         android:id="@+id/etPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/prompt_password"
+        android:minHeight="48dp"
+        android:hint="Password"
+        android:textColor="#000000"
+        android:textColorHint="#5A5A5A"
+        tools:ignore="HardcodedText"
         android:inputType="textPassword"
+        android:autofillHints="password"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etConfirmPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:hint="Confirm Password"
+        android:textColor="#000000"
+        android:textColorHint="#5A5A5A"
+        tools:ignore="HardcodedText"
+        android:inputType="textPassword"
+        android:autofillHints="password"
         android:layout_marginBottom="24dp"/>
 
-    <!-- Register button -->
-    <Button
+    <com.example.reloop.shared.views.LoadingButton
         android:id="@+id/btnRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/action_register"/>
+        android:layout_marginBottom="16dp"/>
 
-    <!-- Link to navigate to login screen -->
     <TextView
         android:id="@+id/tvGoToLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/link_to_login"
-        android:textColor="@android:color/holo_blue_dark"
+        android:minHeight="48dp"
+        android:gravity="center_vertical"
+        android:text="Already have an account? Login"
+        tools:ignore="HardcodedText"
+        android:textColor="#004085"
         android:layout_marginTop="16dp"/>
+
 </LinearLayout>
