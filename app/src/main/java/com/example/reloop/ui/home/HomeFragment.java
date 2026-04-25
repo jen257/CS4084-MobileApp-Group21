@@ -1,7 +1,6 @@
 package com.example.reloop.ui.home;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,96 +9,90 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.reloop.R;
 import com.example.reloop.models.Product;
 import com.example.reloop.ui.home.adapters.ProductAdapter;
-import com.example.reloop.utils.FireBaseHelper;
+import com.example.reloop.ui.home.viewmodel.HomeViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * HomeFragment displays the main product feed for Reloop Marketplace.
- * It integrates Firebase for real-time data and ProductAdapter for RecyclerView.
+ * HomeFragment displays the main product feed using MVVM architecture.
  */
 public class HomeFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ProductAdapter adapter;
     private List<Product> productList;
-    private FireBaseHelper firebaseHelper;
+
+    private HomeViewModel viewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        // 1. Inflate layout
+        // Inflate layout
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // 2. Initialize RecyclerView
+        // Setup RecyclerView
         setupRecyclerView(root);
 
-        // 3. Initialize Firebase Helper
-        firebaseHelper = new FireBaseHelper();
+        // Initialize ViewModel
+        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        // 4. Load products from Firebase
-        loadProductsFromFirebase();
+        // Observe LiveData
+        observeProducts();
+
+        // Load data from Firebase
+        viewModel.loadProducts();
 
         return root;
     }
 
     /**
-     * Setup RecyclerView and ProductAdapter with click listener
+     * Setup RecyclerView and adapter
      */
     private void setupRecyclerView(View root) {
         recyclerView = root.findViewById(R.id.recycler_home_products);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Initialize empty list
         productList = new ArrayList<>();
 
-        // Initialize ProductAdapter with click callback
         adapter = new ProductAdapter(getContext(), productList, product -> {
-            // Callback when "Want" button is clicked
-            Toast.makeText(getContext(), "Added to wishlist: " + product.getTitle(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),
+                    "Added to wishlist: " + product.getTitle(),
+                    Toast.LENGTH_SHORT).show();
         });
 
         recyclerView.setAdapter(adapter);
     }
 
     /**
-     * Load products from Firebase using FireBaseHelper
+     * Observe LiveData from ViewModel
      */
-    private void loadProductsFromFirebase() {
-        firebaseHelper.getAllProducts(new FireBaseHelper.FirebaseCallback() {
-            @Override
-            public void onSuccess(List<Product> products) {
-                if (products != null) {
-                    Log.d("HomeFragment", "Loaded " + products.size() + " products from Firebase.");
+    private void observeProducts() {
 
-                    // Clear previous data
-                    productList.clear();
-
-                    // Add new products
-                    productList.addAll(products);
-
-                    // Notify adapter to refresh UI
-                    if (adapter != null) {
-                        adapter.notifyDataSetChanged();
-                    }
-                }
+        // Observe product list
+        viewModel.getProducts().observe(getViewLifecycleOwner(), products -> {
+            if (products != null) {
+                productList.clear();
+                productList.addAll(products);
+                adapter.notifyDataSetChanged();
             }
+        });
 
-            @Override
-            public void onError(String error) {
-                Log.e("HomeFragment", "Firebase Error: " + error);
-                if (getContext() != null) {
-                    Toast.makeText(getContext(), "Failed to load products: " + error, Toast.LENGTH_SHORT).show();
-                }
+        // Observe error messages
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null) {
+                Toast.makeText(getContext(),
+                        "Failed to load products: " + error,
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
