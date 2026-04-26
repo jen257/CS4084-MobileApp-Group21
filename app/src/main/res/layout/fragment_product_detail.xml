@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_background">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        card_view:cardCornerRadius="12dp"
+        card_view:cardElevation="4dp"
+        android:background="@android:color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Image (same as post) -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:background="#E0E0E0"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/ivProductImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+
+            </FrameLayout>
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#7B1FA2"
+                android:minHeight="48dp"
+                android:padding="12dp"
+                android:layout_marginTop="10dp" />
+
+            <!-- Category + Price row (完全一致结构) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <!-- Category -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="#FCE4EC"
+                    android:padding="8dp"
+                    android:layout_marginEnd="6dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Category"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="#7B1FA2" />
+
+                    <TextView
+                        android:id="@+id/tvCategory"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:minHeight="48dp"
+                        android:gravity="center_vertical"
+                        android:padding="8dp" />
+                </LinearLayout>
+
+                <!-- Price -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="#FFF9C4"
+                    android:padding="8dp"
+                    android:layout_marginStart="6dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Price (€)"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="#7B1FA2" />
+
+                    <TextView
+                        android:id="@+id/tvPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:gravity="center_vertical"
+                        android:padding="12dp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Description label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#7B1FA2"
+                android:layout_marginTop="10dp" />
+
+            <!-- Description content -->
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="4dp"
+                android:textColor="#757575"
+                android:textSize="14sp"
+                android:padding="12dp" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</ScrollView>
