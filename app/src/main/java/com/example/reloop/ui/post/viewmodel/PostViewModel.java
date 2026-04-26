@@ -59,7 +59,7 @@ public class PostViewModel extends ViewModel {
                 product.setTitle(title);
                 product.setCategory(category);
                 product.setDescription(description);
-                product.setPrice(price);
+                product.setPrice(String.valueOf(price));
                 product.setImageUrl(imageUrl);
                 product.setSellerId(sellerId);
                 product.setSold(false);

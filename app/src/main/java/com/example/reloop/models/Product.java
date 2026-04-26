@@ -57,7 +57,7 @@ public class Product implements Serializable {
     public String getPrice() { return price; }
     public String getCategory() { return category; }
     public boolean isSold() { return isSold; }
-    public Location getLocation() { return location; } // 🆕 新增 Getter
+    public Location getLocation() { return location; }
 
     public void setPid(String pid) { this.pid = pid; }
     public void setSellerId(String sellerId) { this.sellerId = sellerId; }
@@ -67,7 +67,7 @@ public class Product implements Serializable {
     public void setPrice(String price) { this.price = price; }
     public void setCategory(String category) { this.category = category; }
     public void setSold(boolean sold) { isSold = sold; }
-    public void setLocation(Location location) { this.location = location; } // 🆕 新增 Setter
+    public void setLocation(Location location) { this.location = location; }
 
     // ===== Utility Methods =====
 
