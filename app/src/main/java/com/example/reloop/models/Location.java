@@ -4,8 +4,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
 import java.io.Serializable;
 
 /**
- * [Member A - System Architect]
- * Data Model representing a geographical location
+ * Data model representing a geographical location
  */
 @IgnoreExtraProperties
 public class Location implements Serializable {
@@ -15,6 +14,7 @@ public class Location implements Serializable {
     public String addressName;
 
     public Location() {
+        // Default constructor required for Firebase
     }
 
     public Location(double latitude, double longitude, String addressName) {
@@ -23,12 +23,36 @@ public class Location implements Serializable {
         this.addressName = addressName;
     }
 
-    public double getLatitude() { return latitude; }
-    public void setLatitude(double latitude) { this.latitude = latitude; }
+    public double getLatitude() {
+        return latitude;
+    }
 
-    public double getLongitude() { return longitude; }
-    public void setLongitude(double longitude) { this.longitude = longitude; }
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
 
-    public String getAddressName() { return addressName; }
-    public void setAddressName(String addressName) { this.addressName = addressName; }
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getAddressName() {
+        return addressName;
+    }
+
+    public void setAddressName(String addressName) {
+        this.addressName = addressName;
+    }
+
+    @Override
+    public String toString() {
+        return "Location{" +
+                "latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", addressName='" + addressName + '\'' +
+                '}';
+    }
 }

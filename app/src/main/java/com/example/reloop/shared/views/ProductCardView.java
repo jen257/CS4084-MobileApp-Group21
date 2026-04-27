@@ -67,7 +67,7 @@ public class ProductCardView extends FrameLayout {
                     .into(binding.productImage);
         } else {
             binding.productImage.setImageResource(android.R.drawable.ic_menu_gallery);
-        } // ← 添加这个右大括号
+        }
 
         // Display seller information
         if (product.getSellerId() != null) {
