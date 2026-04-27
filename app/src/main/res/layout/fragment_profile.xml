@@ -1,59 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:gravity="center_horizontal"
     android:background="#F8F9FA">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="My Profile"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="#333333"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="32dp"
-        tools:ignore="HardcodedText" />
-
-    <ImageView
-        android:id="@+id/ivAvatar"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@android:drawable/ic_menu_myplaces"
-        android:background="@drawable/ic_launcher_background"
-        android:contentDescription="User Avatar"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/tvUserEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="user@example.com"
-        android:textSize="18sp"
-        android:textColor="#666666"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="32dp"
-        tools:ignore="HardcodedText" />
+        android:layout_marginBottom="32dp">
 
-    <com.example.reloop.shared.views.LoadingButton
-        android:id="@+id/btnEditProfile"
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@android:drawable/ic_menu_myplaces"
+            android:contentDescription="User Avatar"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/tvUserEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="user@example.com"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginTop="16dp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/tvEditProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit Profile"
+            android:textSize="14sp"
+            android:textColor="#0066CC"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0" />
+
+    <TextView
+        android:id="@+id/tvSelling"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp" />
+        android:text="Selling"
+        android:textSize="18sp"
+        android:textColor="#333333"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?android:attr/selectableItemBackground"
+        tools:ignore="HardcodedText" />
 
-    <Button
-        android:id="@+id/btnLogout"
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0" />
+
+    <TextView
+        android:id="@+id/tvSold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Logout"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@android:color/holo_red_light"
-        android:textStyle="bold"
+        android:text="Sold"
+        android:textSize="18sp"
+        android:textColor="#333333"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?android:attr/selectableItemBackground"
         tools:ignore="HardcodedText" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0" />
+
+    <TextView
+        android:id="@+id/tvMyWishlist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="My Wishlist"
+        android:textSize="18sp"
+        android:textColor="#333333"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?android:attr/selectableItemBackground"
+        tools:ignore="HardcodedText" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0" />
+
+    <TextView
+        android:id="@+id/tvSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Settings"
+        android:textSize="18sp"
+        android:textColor="#333333"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?android:attr/selectableItemBackground"
+        tools:ignore="HardcodedText" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0" />
 
 </LinearLayout>
