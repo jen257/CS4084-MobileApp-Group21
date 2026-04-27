@@ -34,6 +34,17 @@
     <string name="map_view_title">Map View</string>
     <string name="map_coming_soon">Location features coming soon</string>
 
+    <!-- Google Maps API Key -->
+    <string name="google_maps_api_key">AIzaSyD-your-actual-api-key-here</string>
+
+    <!-- Map Service -->
+    <string name="my_location">My Location</string>
+    <string name="available">Available</string>
+    <string name="sold">Sold</string>
+    <string name="distance_away">%1$s away</string>
+    <string name="refresh">Refresh</string>
+    <string name="map_instructions">Tap on markers to view product details</string>
+
     <!-- Loading Button Strings -->
     <string name="loading"> Loading…</string>
 
