@@ -9,19 +9,22 @@ import com.example.reloop.models.Product;
 import com.example.reloop.utils.FireBaseHelper;
 import com.example.reloop.shared.BaseViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * HomeViewModel handles data logic for HomeFragment.
- * It communicates with Firebase and exposes data via LiveData.
+ * ViewModel for managing product data and filtering logic
  */
 public class HomeViewModel extends BaseViewModel {
 
-    // LiveData for product list
     private final MutableLiveData<List<Product>> productList = new MutableLiveData<>();
-
-    // Firebase helper
     private final FireBaseHelper firebaseHelper;
+
+    // Store original unfiltered data
+    private List<Product> originalList;
+
+    // Current selected category
+    private String currentCategory = "All";
 
     public HomeViewModel() {
         firebaseHelper = new FireBaseHelper();
@@ -40,6 +43,7 @@ public class HomeViewModel extends BaseViewModel {
                 setLoading(false);
                 if (products != null) {
                     Log.d("HomeViewModel", "Loaded " + products.size() + " products");
+                    originalList = products; // Save original list
                     productList.setValue(products);
                 }
             }
@@ -47,16 +51,45 @@ public class HomeViewModel extends BaseViewModel {
             @Override
             public void onError(String error) {
                 setLoading(false);
-                Log.e("HomeViewModel", "Error: " + error);
                 setError("Failed to load products: " + error);
             }
         });
     }
 
     /**
-     * Get product list LiveData
+     * Return LiveData of product list
      */
     public LiveData<List<Product>> getProducts() {
         return productList;
+    }
+
+    /**
+     * Filter products by selected category
+     */
+    public void filterByCategory(String category) {
+        currentCategory = category;
+        applyFilter();
+    }
+
+    /**
+     * Apply category filtering logic
+     */
+    private void applyFilter() {
+        if (originalList == null) return;
+
+        List<Product> filtered = new ArrayList<>();
+
+        if (currentCategory.equals("All")) {
+            filtered.addAll(originalList);
+        } else {
+            for (Product p : originalList) {
+                if (p.getCategory() != null &&
+                        p.getCategory().equalsIgnoreCase(currentCategory)) {
+                    filtered.add(p);
+                }
+            }
+        }
+
+        productList.setValue(filtered);
     }
 }
