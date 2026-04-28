@@ -4,29 +4,21 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
-
 import com.example.reloop.R;
-import com.example.reloop.shared.views.LoadingButton;
 import com.example.reloop.ui.profile.viewmodel.ProfileViewModel;
 
-/**
- * Fragment responsible for displaying and managing user profile.
- */
 public class ProfileFragment extends Fragment {
 
     private ProfileViewModel profileViewModel;
-    private TextView tvUserEmail;
-    private LoadingButton btnEditProfile;
-    private Button btnLogout;
+    private TextView tvUserEmail, tvEditProfile;
+    private TextView tvSelling, tvSold, tvMyWishlist, tvSettings;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -40,44 +32,34 @@ public class ProfileFragment extends Fragment {
         profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 
         tvUserEmail = view.findViewById(R.id.tvUserEmail);
-        btnEditProfile = view.findViewById(R.id.btnEditProfile);
-        btnLogout = view.findViewById(R.id.btnLogout);
+        tvEditProfile = view.findViewById(R.id.tvEditProfile);
+        tvSelling = view.findViewById(R.id.tvSelling);
+        tvSold = view.findViewById(R.id.tvSold);
+        tvMyWishlist = view.findViewById(R.id.tvMyWishlist);
+        tvSettings = view.findViewById(R.id.tvSettings);
 
-        btnEditProfile.setText("Edit Profile");
-
-        setupObservers(view);
-
-        btnEditProfile.setOnButtonClickListener(v ->
-                Toast.makeText(getContext(), "Edit Profile clicked", Toast.LENGTH_SHORT).show()
-        );
-
-        btnLogout.setOnClickListener(v -> profileViewModel.logout());
+        setupObservers();
+        setupListeners();
     }
 
-    private void setupObservers(View view) {
-        // Optimized: Statement lambda replaced with expression lambda
+    private void setupObservers() {
         profileViewModel.getCurrentUser().observe(getViewLifecycleOwner(), firebaseUser -> {
             if (firebaseUser != null && firebaseUser.getEmail() != null) {
                 tvUserEmail.setText(firebaseUser.getEmail());
             }
         });
+        // Removed logout observer as it is now handled in SettingsFragment
+    }
 
-        // Optimized Lambda
-        profileViewModel.isLoading.observe(getViewLifecycleOwner(), isLoading ->
-                btnEditProfile.setLoading(isLoading)
+    private void setupListeners() {
+        tvEditProfile.setOnClickListener(v ->
+                Toast.makeText(getContext(), "Edit Profile coming soon", Toast.LENGTH_SHORT).show()
         );
 
-        profileViewModel.successMessage.observe(getViewLifecycleOwner(), success -> {
-            if (success != null) {
-                Toast.makeText(getContext(), success, Toast.LENGTH_SHORT).show();
-            }
-        });
+        tvSettings.setOnClickListener(v ->
+                Navigation.findNavController(requireView()).navigate(R.id.action_profileFragment_to_settingsFragment)
+        );
 
-        // Fixed navigation: action ID now matches nav_graph.xml
-        profileViewModel.getNavigateToLogin().observe(getViewLifecycleOwner(), navigate -> {
-            if (navigate != null && navigate) {
-                Navigation.findNavController(view).navigate(R.id.action_profileFragment_to_loginFragment);
-            }
-        });
+        // Add other listeners (Selling, Sold, Wishlist) here as needed
     }
 }
