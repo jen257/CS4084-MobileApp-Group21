@@ -5,129 +5,136 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.reloop.R;
 import com.example.reloop.models.Product;
+import com.example.reloop.ui.home.adapters.CategoryAdapter;
 import com.example.reloop.ui.home.adapters.ProductAdapter;
 import com.example.reloop.ui.home.viewmodel.HomeViewModel;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * HomeFragment displays the main product feed using MVVM architecture.
+ * HomeFragment displays product list and category filter UI.
  */
 public class HomeFragment extends Fragment {
 
-    private final List<Product> productList = new ArrayList<>();
-    private ProductAdapter adapter;
     private HomeViewModel viewModel;
+
+    private ProductAdapter productAdapter;
+    private CategoryAdapter categoryAdapter;
+
+    private final List<Product> productList = new ArrayList<>();
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        // Inflate layout
+
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // Setup RecyclerView
-        setupRecyclerView(root);
-
-        // Initialize ViewModel
+        // Init ViewModel
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        // Observe LiveData
-        observeProducts();
+        // Setup UI
+        setupProductRecycler(root);
+        setupCategoryRecycler(root);
 
-        // Load data from Firebase
+        // Observe data
+        observeViewModel();
+
+        // Load data
         viewModel.loadProducts();
 
         return root;
     }
 
     /**
-     * Setup RecyclerView and adapter
+     * Setup product RecyclerView
      */
-    private void setupRecyclerView(View root) {
+    private void setupProductRecycler(View root) {
+
         RecyclerView recyclerView = root.findViewById(R.id.recycler_home_products);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new ProductAdapter(getContext(), productList,
-                product -> Toast.makeText(getContext(), "Added to wishlist: " + product.getTitle(), Toast.LENGTH_SHORT).show());
+        productAdapter = new ProductAdapter(
+                getContext(),
+                productList,
+                product -> Toast.makeText(getContext(),
+                        "Added: " + product.getTitle(),
+                        Toast.LENGTH_SHORT).show()
+        );
 
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(productAdapter);
+    }
+
+    /**
+     * Setup category RecyclerView
+     */
+    private void setupCategoryRecycler(View root) {
+
+        RecyclerView recyclerView = root.findViewById(R.id.recycler_categories);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        List<String> categories = new ArrayList<>();
+        categories.add("All");
+        categories.add("Electronics");
+        categories.add("Clothing");
+        categories.add("Books");
+        categories.add("Others");
+
+        categoryAdapter = new CategoryAdapter(categories, category -> {
+
+            // Send category selection to ViewModel
+            viewModel.filterByCategory(category);
+        });
+
+        recyclerView.setAdapter(categoryAdapter);
     }
 
     /**
      * Observe LiveData from ViewModel
      */
-    private void observeProducts() {
-        // Observe product list
+    private void observeViewModel() {
+
         viewModel.getProducts().observe(getViewLifecycleOwner(), products -> {
+
             if (products != null) {
-                updateProductList(products);
+
+                productList.clear();
+                productList.addAll(products);
+
+                productAdapter.notifyDataSetChanged();
             }
         });
 
-        // Observe error messages
         viewModel.errorMessage.observe(getViewLifecycleOwner(), error -> {
+
             if (error != null) {
                 Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Observe loading state
         viewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
-            // Show/hide loading indicator
-            if (isLoading != null && isLoading && getView() != null) {
-                View progressBar = getView().findViewById(R.id.progressBar);
-                if (progressBar != null) {
-                    progressBar.setVisibility(View.VISIBLE);
-                }
-            } else if (getView() != null) {
-                View progressBar = getView().findViewById(R.id.progressBar);
-                if (progressBar != null) {
-                    progressBar.setVisibility(View.GONE);
-                }
+
+            if (getView() == null) return;
+
+            View progressBar = getView().findViewById(R.id.progressBar);
+
+            if (progressBar != null) {
+                progressBar.setVisibility(
+                        (isLoading != null && isLoading) ? View.VISIBLE : View.GONE
+                );
             }
         });
-
-        // Observe success messages
-        viewModel.successMessage.observe(getViewLifecycleOwner(), message -> {
-            if (message != null) {
-                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    /**
-     * Efficiently update product list with proper RecyclerView notifications
-     */
-    private void updateProductList(List<Product> newProducts) {
-        int oldSize = productList.size();
-        int newSize = newProducts.size();
-
-        productList.clear();
-        productList.addAll(newProducts);
-
-        if (oldSize == 0) {
-            // First load - insert all items
-            adapter.notifyItemRangeInserted(0, newSize);
-        } else if (oldSize == newSize) {
-            // Same size - refresh all items
-            adapter.notifyItemRangeChanged(0, newSize);
-        } else if (oldSize > newSize) {
-            // Items removed - remove excess and update remaining
-            adapter.notifyItemRangeRemoved(newSize, oldSize - newSize);
-            adapter.notifyItemRangeChanged(0, newSize);
-        } else {
-            // Items added - update existing and insert new
-            adapter.notifyItemRangeChanged(0, oldSize);
-            adapter.notifyItemRangeInserted(oldSize, newSize - oldSize);
-        }
     }
 }
