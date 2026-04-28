@@ -7,19 +7,18 @@
     android:layout_height="match_parent"
     android:background="@color/app_background">
 
-    <!-- Progress Bar for loading state -->
+    <!-- Loading indicator -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Top banner image (e.g., promotions or app branding) -->
+    <!-- Top banner -->
     <ImageView
         android:id="@+id/home_banner"
         android:layout_width="0dp"
@@ -29,10 +28,9 @@
         app:layout_constraintHeight_percent="0.25"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:src="@android:drawable/ic_menu_gallery" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Left section for category/tags (future feature extension) -->
+    <!-- Category section (LEFT SIDE) -->
     <androidx.cardview.widget.CardView
         android:id="@+id/section_tags"
         android:layout_width="0dp"
@@ -47,19 +45,16 @@
         app:layout_constraintEnd_toStartOf="@id/recycler_home_products"
         app:layout_constraintWidth_percent="0.25">
 
-        <!-- Placeholder title for category section -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:text="@string/tag_label"
-            android:textColor="@color/main_text"
-            android:textStyle="bold" />
+        <!-- RecyclerView for category list -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_categories"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"/>
 
     </androidx.cardview.widget.CardView>
 
-    <!-- Main RecyclerView displaying product list -->
+    <!-- Product list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_home_products"
         android:layout_width="0dp"
