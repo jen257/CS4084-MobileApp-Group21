@@ -1,4 +1,4 @@
-package com.example.reloop.database;
+package com.example.reloop.database.daos;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -6,6 +6,8 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
+
+import com.example.reloop.database.entities.ProductEntity;
 
 import java.util.List;
 

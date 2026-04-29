@@ -1,4 +1,4 @@
-package com.example.reloop.database;
+package com.example.reloop.database.entities;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;

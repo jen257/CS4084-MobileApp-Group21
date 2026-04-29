@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.reloop.R;
 import com.example.reloop.database.AppDataBase;
-import com.example.reloop.database.ProductDao;
-import com.example.reloop.database.ProductEntity;
+import com.example.reloop.database.daos.ProductDao;
+import com.example.reloop.database.entities.ProductEntity;
 import com.example.reloop.models.Product;
 
 import java.util.List;

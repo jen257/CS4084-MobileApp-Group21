@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.reloop.R;
 import com.example.reloop.database.AppDataBase;
-import com.example.reloop.database.ProductEntity;
+import com.example.reloop.database.entities.ProductEntity;
 import com.example.reloop.ui.wishlist.adapters.WishlistAdapter;
 
 import java.util.Collections;

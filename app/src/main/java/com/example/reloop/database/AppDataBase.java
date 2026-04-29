@@ -5,6 +5,9 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import com.example.reloop.database.daos.ProductDao;
+import com.example.reloop.database.entities.ProductEntity;
+
 /**
  * [Member A]
  * Singleton Room Database setup.
