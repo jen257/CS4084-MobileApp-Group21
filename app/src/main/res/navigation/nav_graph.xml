@@ -5,6 +5,7 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/loginFragment">
 
+    <!-- Authentication Flow -->
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.reloop.ui.auth.LoginFragment"
@@ -32,22 +33,29 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_registerFragment_to_loginFragment"
-            app:destination="@id/loginFragment"
-            app:popUpTo="@id/loginFragment"
-            app:popUpToInclusive="true" />
+            app:destination="@id/loginFragment" />
     </fragment>
 
+    <!-- Main Interface - Bottom Navigation Related -->
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.reloop.ui.home.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.reloop.ui.search.SearchFragment"
         android:label="Search"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search">
+        <action
+            android:id="@+id/action_searchFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/postFragment"
@@ -55,16 +63,17 @@
         android:label="Sell"
         tools:layout="@layout/fragment_post" />
 
+    <!-- Messaging Feature - As Bottom Navigation Item -->
     <fragment
         android:id="@+id/messageFragment"
-        android:name="com.example.reloop.ui.message.MessageFragment"
-        android:label="Message"
-        tools:layout="@layout/fragment_message" />
+        android:name="com.example.reloop.ui.message.ConversationListFragment"
+        android:label="Messages"
+        tools:layout="@layout/fragment_conversations">
+        <action
+            android:id="@+id/action_messageFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+    </fragment>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="git commit -m &quot;feat(settings): implement SettingsFragment with preferences&quot; -m &quot;Added Settings UI, updated Profile UI layout, and connected them via navigation graph.&quot;" />
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.reloop.ui.profile.ProfileFragment"
@@ -73,6 +82,36 @@
         <action
             android:id="@+id/action_profileFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+    </fragment>
+
+    <!-- Secondary Pages (Not Directly Accessed via Bottom Navigation) -->
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.example.reloop.ui.message.ChatFragment"
+        android:label="Chat"
+        tools:layout="@layout/fragment_chat">
+        <argument
+            android:name="conversationId"
+            app:argType="string" />
+        <argument
+            android:name="otherUserId"
+            app:argType="string" />
+        <argument
+            android:name="productId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/productDetailFragment"
+        android:name="com.example.reloop.ui.detail.ProductDetailFragment"
+        android:label="Product Details"
+        tools:layout="@layout/fragment_product_detail">
+        <argument
+            android:name="productId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
     </fragment>
 
     <fragment
@@ -84,7 +123,7 @@
             android:id="@+id/action_settingsFragment_to_loginFragment"
             app:destination="@id/loginFragment"
             app:popUpTo="@id/nav_graph"
-            app:popUpToInclusive="true" />
+            app:popUpInclusive="true" />
     </fragment>
 
 </navigation>
