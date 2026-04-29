@@ -13,8 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.reloop.R;
 import com.example.reloop.models.Conversation;
+import com.example.reloop.repository.MessageRepository;
 import com.example.reloop.ui.message.adapters.ConversationAdapter;
 import com.example.reloop.ui.message.viewmodel.ConversationViewModel;
+import com.example.reloop.ui.message.viewmodel.MessageViewModelFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,19 +46,16 @@ public class ConversationListFragment extends Fragment implements ConversationAd
     }
 
     private void setupViewModel() {
-        conversationViewModel = new ViewModelProvider(this).get(ConversationViewModel.class);
+        // Initialize Room DB and Repository
+        com.example.reloop.database.AppDataBase db = com.example.reloop.database.AppDataBase.getInstance(requireContext());
+        MessageRepository repo = new MessageRepository(db.messageDao());
+        MessageViewModelFactory factory = new MessageViewModelFactory(repo);
+
+        conversationViewModel = new ViewModelProvider(this, factory).get(ConversationViewModel.class);
 
         conversationViewModel.getConversations().observe(getViewLifecycleOwner(), conversations -> {
-            conversationAdapter.setConversations(conversations);
-        });
-
-        conversationViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            // Handle loading state
-        });
-
-        conversationViewModel.getError().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) {
-                // Show error message
+            if (conversations != null) {
+                conversationAdapter.setConversations(conversations);
             }
         });
     }
@@ -67,20 +67,20 @@ public class ConversationListFragment extends Fragment implements ConversationAd
     }
 
     private void loadConversations() {
-        String currentUserId = "current_user_id"; // Get from shared preferences or auth
+        String currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser().getUid();
         conversationViewModel.loadUserConversations(currentUserId);
     }
 
     @Override
     public void onConversationClick(Conversation conversation) {
-        // Navigate to chat fragment
+        String currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser().getUid();
         Bundle args = new Bundle();
         args.putString("conversationId", conversation.getId());
-        args.putString("currentUserId", "current_user_id"); // Get from auth
-        args.putString("otherUserId", conversation.getOtherParticipant("current_user_id"));
+        args.putString("currentUserId", currentUserId);
+        args.putString("otherUserId", conversation.getOtherParticipant(currentUserId));
         args.putString("productId", conversation.getProductId());
 
-        Navigation.findNavController(requireView())
+        androidx.navigation.Navigation.findNavController(requireView())
                 .navigate(R.id.action_messageFragment_to_chatFragment, args);
     }
 }

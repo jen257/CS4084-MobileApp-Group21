@@ -1,6 +1,7 @@
 package com.example.reloop.ui.message.viewmodel;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.example.reloop.models.Message;
@@ -9,24 +10,29 @@ import java.util.List;
 
 public class ChatViewModel extends ViewModel {
     private MessageRepository messageRepository;
-    private MutableLiveData<List<Message>> messages = new MutableLiveData<>();
+    private MediatorLiveData<List<Message>> messages = new MediatorLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     private MutableLiveData<String> error = new MutableLiveData<>();
+    private LiveData<List<Message>> repositorySource;
 
     public ChatViewModel(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
     }
 
-    public ConversationViewModel() {
-        this.isLoading = new MutableLiveData<>();
-        this.error = new MutableLiveData<>();
-    }
-
     public void loadMessages(String conversationId) {
         isLoading.setValue(true);
-        // Implementation would connect to repository
-        // For now, using mock data
-        isLoading.setValue(false);
+
+        // Remove old source if reloading a different conversation
+        if (repositorySource != null) {
+            messages.removeSource(repositorySource);
+        }
+
+        // Connect directly to the repository's real-time LiveData
+        repositorySource = messageRepository.getMessages(conversationId);
+        messages.addSource(repositorySource, newMessages -> {
+            messages.setValue(newMessages);
+            isLoading.setValue(false);
+        });
     }
 
     public void sendMessage(Message message) {

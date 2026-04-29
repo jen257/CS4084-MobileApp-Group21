@@ -78,7 +78,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         notifyDataSetChanged();
     }
 
-    static class ConversationViewHolder extends RecyclerView.ViewHolder {
+    class ConversationViewHolder extends RecyclerView.ViewHolder {
         private TextView userName;
         private TextView lastMessage;
         private TextView timestamp;
@@ -86,10 +86,10 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
         ConversationViewHolder(@NonNull View itemView) {
             super(itemView);
-            userName = itemView.findViewById(R.id.user_name); // Fixed ID
-            lastMessage = itemView.findViewById(R.id.last_message); // Fixed ID
+            userName = itemView.findViewById(R.id.user_name);
+            lastMessage = itemView.findViewById(R.id.last_message);
             timestamp = itemView.findViewById(R.id.timestamp);
-            unreadCount = itemView.findViewById(R.id.unread_count); // Fixed ID
+            unreadCount = itemView.findViewById(R.id.unread_count);
         }
 
         void bind(Conversation conversation) {
@@ -102,11 +102,14 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             if (lastMsg != null) {
                 lastMessage.setText(lastMsg.getContent());
 
-                // Format timestamp
-                if (isToday(lastMsg.getTimestamp())) {
-                    timestamp.setText(timeFormat.format(lastMsg.getTimestamp()));
+                if (lastMsg.getTimestamp() != null) {
+                    if (isToday(lastMsg.getTimestamp().getTime())) {
+                        timestamp.setText(timeFormat.format(lastMsg.getTimestamp()));
+                    } else {
+                        timestamp.setText(dateFormat.format(lastMsg.getTimestamp()));
+                    }
                 } else {
-                    timestamp.setText(dateFormat.format(lastMsg.getTimestamp()));
+                    timestamp.setText("");
                 }
             } else {
                 lastMessage.setText("No messages yet");

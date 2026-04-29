@@ -9,10 +9,10 @@ public class SettingsEntity {
 
     @PrimaryKey
     @NonNull
-    private String userId = "";
+    public String userId = "";
 
-    private boolean isDarkModeEnabled;
-    private boolean areNotificationsEnabled;
+    public boolean isDarkModeEnabled;
+    public boolean areNotificationsEnabled;
 
     public SettingsEntity() {
         // Default constructor required by Room
