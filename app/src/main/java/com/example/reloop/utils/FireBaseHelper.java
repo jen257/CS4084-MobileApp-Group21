@@ -9,8 +9,7 @@ import java.util.List;
 /**
  * [Member A - System Architect]
  * Global Firebase Helper class to manage Realtime Database operations.
- * This class provides standardized methods for the whole team (Members B, C, and D)
- * to interact with the "products" node in the cloud.
+ * Acts as the unified data access layer for the entire team to prevent synchronization conflicts.
  */
 public class FireBaseHelper {
 
@@ -25,11 +24,12 @@ public class FireBaseHelper {
     // 1. Fetch All Products (Used by Member C for Home Feed)
     // ============================================================
     /**
-     * Listens for real-time updates in the products node.
-     * Triggers the callback whenever data changes on the server.
+     * [Day 5 Fix] Listens for real-time updates in the products node.
+     * @param callback Interface to handle the asynchronous list of products.
+     * @return ValueEventListener instance, allowing the UI to detach it later to prevent memory leaks.
      */
-    public void getAllProducts(FirebaseCallback callback) {
-        productRef.addValueEventListener(new ValueEventListener() {
+    public ValueEventListener getAllProducts(FirebaseCallback callback) {
+        ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 List<Product> list = new ArrayList<>();
@@ -46,7 +46,20 @@ public class FireBaseHelper {
             public void onCancelled(DatabaseError error) {
                 callback.onError(error.getMessage());
             }
-        });
+        };
+        // Attach the listener to the database reference
+        productRef.addValueEventListener(listener);
+        return listener; // CRITICAL: Return the listener so ViewModels can remove it on clear
+    }
+
+    /**
+     * [Day 5 Fix] Detaches a previously attached database listener.
+     * @param listener The ValueEventListener to be removed.
+     */
+    public void removeListener(ValueEventListener listener) {
+        if (listener != null) {
+            productRef.removeEventListener(listener);
+        }
     }
 
     // ============================================================
@@ -54,6 +67,7 @@ public class FireBaseHelper {
     // ============================================================
     /**
      * Generates a unique push ID for a new product and saves it to the database.
+     * @param product The Product object to be pushed to the cloud.
      */
     public void addProduct(Product product) {
         String id = productRef.push().getKey();
@@ -68,6 +82,7 @@ public class FireBaseHelper {
     // ============================================================
     /**
      * Removes a product from the database using its unique PID.
+     * @param pid The unique Product ID.
      */
     public void deleteProduct(String pid) {
         productRef.child(pid).removeValue();
@@ -78,6 +93,8 @@ public class FireBaseHelper {
     // ============================================================
     /**
      * Filters products based on the seller's unique Firebase UID.
+     * @param sellerId The UID of the seller to filter by.
+     * @param callback Interface to handle the fetched list.
      */
     public void getProductsByUser(String sellerId, FirebaseCallback callback) {
         productRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -106,7 +123,7 @@ public class FireBaseHelper {
     // ============================================================
     /**
      * Updates the 'isSold' boolean field in Firebase.
-     * Note: Field name matches the 'isSold' variable in Product.java.
+     * @param pid The unique Product ID to mark as sold.
      */
     public void markAsSold(String pid) {
         productRef.child(pid).child("isSold").setValue(true);
@@ -116,20 +133,10 @@ public class FireBaseHelper {
     // FirebaseCallback Interface
     // ============================================================
     /**
-     * Interface to handle asynchronous results from Firebase operations.
+     * Custom interface to handle asynchronous results from Firebase operations.
      */
     public interface FirebaseCallback {
-        /**
-         * Called when data is successfully retrieved.
-         * @param products List of Product objects from the database.
-         */
         void onSuccess(List<Product> products);
-
-        /**
-         * Called when a database error occurs.
-         * @param error Error message string.
-         */
         void onError(String error);
     }
 }
-
