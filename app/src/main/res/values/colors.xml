@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Background (Soft warm cream) -->
+    <!-- Your New Brand Palette -->
     <color name="bg_cream">#FFF7E0</color>
-
-    <!-- Primary text / main body (Soft charcoal black) -->
     <color name="brand_black">#1A1A1A</color>
-
-    <!-- Accent color (Low-saturation warm yellow) -->
     <color name="brand_yellow">#FFD33D</color>
-
-    <!-- Pure white for contrast elements -->
     <color name="white">#FFFFFF</color>
 
+    <color name="primary">#FFD33D</color>
+    <color name="primary_color">#FFD33D</color>
+    <color name="black">#1A1A1A</color>
+
+    <!-- Grays for Text and Backgrounds -->
+    <color name="gray_light">#F5F5F5</color>
+    <color name="gray_medium">#8E8E8E</color>
+    <color name="gray_dark">#424242</color>
+
+    <!-- Status Colors (For the Map Marker and logic) -->
+    <color name="green">#2E7D32</color>
+    <color name="red">#C62828</color>
 </resources>
