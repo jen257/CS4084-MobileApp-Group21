@@ -79,6 +79,7 @@ dependencies {
 
     // For location services
     implementation("com.google.android.gms:play-services-location:21.0.1")
-
+    // Add FCM dependency
+    implementation("com.google.firebase:firebase-messaging")
 }
 

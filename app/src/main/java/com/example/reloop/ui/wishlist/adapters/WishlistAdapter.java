@@ -1,5 +1,12 @@
 package com.example.reloop.ui.wishlist.adapters;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.example.reloop.utils.Constants;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -21,6 +28,7 @@ import com.example.reloop.database.entities.ProductEntity;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 
 public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHolder> {
 
@@ -61,9 +69,50 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
         } else {
             holder.productImage.setImageResource(android.R.drawable.ic_menu_gallery);
         }
+        holder.soldOverlay.setVisibility(View.GONE);
+        holder.itemView.setAlpha(1.0f);
+        holder.itemView.setClickable(true);
 
+        String productId = product.getPid();
+        if (productId != null && !productId.isEmpty()) {
+            DatabaseReference productRef = FirebaseDatabase.getInstance()
+                    .getReference(Constants.NODE_PRODUCTS)
+                    .child(productId);
+
+            productRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (holder.getAdapterPosition() == RecyclerView.NO_POSITION) return;
+                    if (!snapshot.exists()) {
+                        
+                        holder.soldOverlay.setText("DELETED");
+                        holder.soldOverlay.setVisibility(View.VISIBLE);
+                        holder.itemView.setAlpha(0.5f);
+                        holder.itemView.setClickable(false);
+                    } else {
+
+                        Boolean isSold = snapshot.child("isSold").getValue(Boolean.class);
+                        if (isSold != null && isSold) {
+                            holder.soldOverlay.setText("SOLD OUT");
+                            holder.soldOverlay.setVisibility(View.VISIBLE);
+                            holder.itemView.setAlpha(0.5f);
+                            holder.itemView.setClickable(false);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
+        }
         // Remove from wishlist
-        holder.favIcon.setOnClickListener(v -> removeFromWishlist(product, position));
+        holder.favIcon.setOnClickListener(v -> {
+            int currentPos = holder.getAdapterPosition();
+            if (currentPos != RecyclerView.NO_POSITION) {
+                removeFromWishlist(wishlist.get(currentPos), currentPos);
+            }
+        });
     }
 
     private void removeFromWishlist(ProductEntity product, int position) {
@@ -73,10 +122,12 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
             // Update on UI thread
             if (context instanceof Activity) {
                 ((Activity) context).runOnUiThread(() -> {
-                    wishlist.remove(position);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, wishlist.size());
-                    Toast.makeText(context, "Removed from wishlist", Toast.LENGTH_SHORT).show();
+                    if (position >= 0 && position < wishlist.size()) {
+                        wishlist.remove(position);
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, wishlist.size());
+                        Toast.makeText(context, "Removed from wishlist", Toast.LENGTH_SHORT).show();
+                    }
                 });
             }
         });
@@ -96,7 +147,7 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView title, price;
         ImageView favIcon, productImage;
-
+        TextView soldOverlay;
         @SuppressLint("WrongViewCast")
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -104,6 +155,7 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
             price = itemView.findViewById(R.id.product_price);
             favIcon = itemView.findViewById(R.id.want_button);
             productImage = itemView.findViewById(R.id.product_image);
+            soldOverlay = itemView.findViewById(R.id.overlay_sold);
         }
     }
 }
