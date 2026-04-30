@@ -6,6 +6,11 @@ import com.example.reloop.repository.AuthRepository;
 import com.example.reloop.shared.BaseViewModel;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.example.reloop.utils.Constants;
+import android.util.Log;
+
 /**
  * ViewModel for handling authentication logic (Login & Register).
  * Inherits loading and error state management from BaseViewModel.
@@ -48,10 +53,19 @@ public class AuthViewModel extends BaseViewModel {
                     setLoading(false);
                     setSuccess("Login successful!");
                     authState.postValue(true); // Trigger navigation
+                    try {
+                        if (authResult != null && authResult.getUser() != null) {
+                            saveFCMTokenToDatabase(authResult.getUser().getUid());
+                        }
+                    } catch (Exception e) {
+                        Log.e("AuthViewModel", "Error getting user ID for token", e);
+                    }
+
+                    authState.postValue(true);
                 })
                 .addOnFailureListener(e -> {
                     setLoading(false);
-                    setError(e.getMessage()); // Trigger Toast message
+                    setError(e.getMessage());
                     authState.postValue(false);
                 });
     }
@@ -68,6 +82,16 @@ public class AuthViewModel extends BaseViewModel {
                     setLoading(false);
                     setSuccess("Registration successful!");
                     authState.postValue(true);
+
+                    try {
+                        if (authResult != null && authResult.getUser() != null) {
+                            saveFCMTokenToDatabase(authResult.getUser().getUid());
+                        }
+                    } catch (Exception e) {
+                        Log.e("AuthViewModel", "Error getting user ID for token", e);
+                    }
+
+                    authState.postValue(true);
                 })
                 .addOnFailureListener(e -> {
                     setLoading(false);
@@ -82,5 +106,26 @@ public class AuthViewModel extends BaseViewModel {
     public void logout() {
         authRepository.logoutUser();
         authState.postValue(false);
+    }
+
+    private void saveFCMTokenToDatabase(String userId) {
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.w("AuthViewModel", "Fetching FCM registration token failed", task.getException());
+                return;
+            }
+
+
+            String token = task.getResult();
+
+
+            FirebaseDatabase.getInstance()
+                    .getReference(Constants.NODE_USERS)
+                    .child(userId)
+                    .child("fcmToken")
+                    .setValue(token)
+                    .addOnSuccessListener(aVoid -> Log.d("AuthViewModel", "FCM Token saved successfully!"))
+                    .addOnFailureListener(e -> Log.e("AuthViewModel", "Failed to save FCM token", e));
+        });
     }
 }
