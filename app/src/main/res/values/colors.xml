@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Your New Brand Palette -->
     <color name="bg_cream">#FFF7E0</color>
     <color name="brand_black">#1A1A1A</color>
     <color name="brand_yellow">#FFD33D</color>
