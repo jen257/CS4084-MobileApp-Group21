@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,19 +17,19 @@ import androidx.fragment.app.DialogFragment;
 import com.example.reloop.R;
 
 /**
- * DialogFragment for advanced product filtering capabilities.
+ * DialogFragment for advanced product filtering capabilities (Price & Distance).
  */
 public class FilterDialog extends DialogFragment {
 
     private EditText etMinPrice;
     private EditText etMaxPrice;
-    private FilterListener listener;
+    private SeekBar seekBarDistance;
+    private TextView tvDistanceValue;
 
-    /**
-     * Interface to communicate filter constraints back to the parent fragment.
-     */
+    private FilterListener listener;
+    private int selectedDistance = 10; // default 10km
     public interface FilterListener {
-        void onFilterApplied(Double minPrice, Double maxPrice);
+        void onFilterApplied(Double minPrice, Double maxPrice, int maxDistanceKm);
     }
 
     public void setFilterListener(FilterListener listener) {
@@ -41,8 +43,27 @@ public class FilterDialog extends DialogFragment {
 
         etMinPrice = view.findViewById(R.id.etMinPrice);
         etMaxPrice = view.findViewById(R.id.etMaxPrice);
+        seekBarDistance = view.findViewById(R.id.seekBarDistance);
+        tvDistanceValue = view.findViewById(R.id.tvDistanceValue);
         Button btnCancel = view.findViewById(R.id.btnCancel);
         Button btnApply = view.findViewById(R.id.btnApply);
+
+        tvDistanceValue.setText(selectedDistance + " km");
+
+        seekBarDistance.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // Prevent distance from dropping to 0km; minimum limit is 1km
+                selectedDistance = Math.max(progress, 1);
+                tvDistanceValue.setText(selectedDistance + " km");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
 
         // Handle cancel action
         btnCancel.setOnClickListener(v -> dismiss());
@@ -52,7 +73,7 @@ public class FilterDialog extends DialogFragment {
             if (listener != null) {
                 Double min = parseDoubleOrNull(etMinPrice.getText().toString());
                 Double max = parseDoubleOrNull(etMaxPrice.getText().toString());
-                listener.onFilterApplied(min, max);
+                listener.onFilterApplied(min, max, selectedDistance);
             }
             dismiss();
         });
@@ -70,12 +91,10 @@ public class FilterDialog extends DialogFragment {
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
             );
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
     }
 
-    /**
-     * Safely parse user input to Double.
-     */
     private Double parseDoubleOrNull(String value) {
         if (value == null || value.trim().isEmpty()) {
             return null;

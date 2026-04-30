@@ -57,6 +57,39 @@
             android:background="@android:drawable/edit_text" />
     </LinearLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Distance Filter"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="8dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <SeekBar
+            android:id="@+id/seekBarDistance"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:max="50"
+            android:progress="10" />
+
+        <TextView
+            android:id="@+id/tvDistanceValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10 km"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:layout_marginStart="12dp"/>
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -78,8 +111,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Apply Filter"
-            android:textColor="@android:color/white"
-            android:backgroundTint="#0066CC" />
+            android:textColor="#000000"
+            android:backgroundTint="@color/brand_yellow" />
     </LinearLayout>
 
 </LinearLayout>
