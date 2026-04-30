@@ -1,7 +1,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
+    <!-- Dark theme base -->
     <style name="Base.Theme.Reloop" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+
+        <!-- Primary accent color -->
+        <item name="colorPrimary">@color/brand_yellow</item>
+
+        <!-- Background in dark mode -->
+        <item name="android:colorBackground">@color/brand_black</item>
+
+        <!-- Primary text in dark mode -->
+        <item name="android:textColorPrimary">@color/white</item>
+
+        <!-- Secondary accent -->
+        <item name="colorSecondary">@color/brand_yellow</item>
+
+        <!-- Active UI elements -->
+        <item name="colorControlActivated">@color/brand_yellow</item>
+
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">@color/brand_black</item>
+
     </style>
+
 </resources>
