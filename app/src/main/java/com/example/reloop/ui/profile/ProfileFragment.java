@@ -99,7 +99,6 @@ public class ProfileFragment extends Fragment {
                 Toast.makeText(getContext(), "Edit Profile coming soon", Toast.LENGTH_SHORT).show()
         );
 
-        // Fixed: Added listeners to clear the "assigned but never accessed" warnings
         tvSelling.setOnClickListener(v ->
                 Toast.makeText(getContext(), "Selling feature coming soon", Toast.LENGTH_SHORT).show()
         );
@@ -109,7 +108,7 @@ public class ProfileFragment extends Fragment {
         );
 
         tvMyWishlist.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Wishlist feature coming soon", Toast.LENGTH_SHORT).show()
+                Navigation.findNavController(v).navigate(R.id.wishlistFragment)
         );
 
         tvSettings.setOnClickListener(v ->
