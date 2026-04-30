@@ -1,23 +1,24 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Dark theme base -->
     <style name="Base.Theme.Reloop" parent="Theme.Material3.DayNight.NoActionBar">
 
-        <!-- Primary color -->
+        <!-- Primary accent color -->
         <item name="colorPrimary">@color/brand_yellow</item>
 
-        <!-- Background -->
+        <!-- Background in dark mode -->
         <item name="android:colorBackground">@color/brand_black</item>
 
-        <!-- Text -->
+        <!-- Primary text in dark mode -->
         <item name="android:textColorPrimary">@color/white</item>
 
-        <!-- Buttons / Secondary color -->
+        <!-- Secondary accent -->
         <item name="colorSecondary">@color/brand_yellow</item>
 
-        <!--  Active controls (e.g. cursor, switches) -->
+        <!-- Active UI elements -->
         <item name="colorControlActivated">@color/brand_yellow</item>
 
-        <!-- Status bar -->
+        <!-- Status bar color -->
         <item name="android:statusBarColor">@color/brand_black</item>
 
     </style>
