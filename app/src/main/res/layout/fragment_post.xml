@@ -1,172 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background">
+    android:background="#FFF7E0"
+    tools:ignore="HardcodedText">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        card_view:cardCornerRadius="12dp"
-        card_view:cardElevation="4dp"
-        android:background="@android:color/white">
+        android:layout_margin="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="16dp">
 
-            <!-- Image preview container -->
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:background="#E0E0E0"
-                android:gravity="center">
-
+                android:layout_height="220dp"
+                android:background="#F5F5F5">
                 <ImageView
                     android:id="@+id/ivProductImage"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:visibility="gone" />
-
+                    android:visibility="gone"
+                    android:contentDescription="Selected Product Image" />
                 <TextView
                     android:id="@+id/txtImagePlaceholder"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No Image"
-                    android:textColor="#9E9E9E"
-                    android:textSize="16sp"
-                    android:textStyle="italic" />
+                    android:layout_gravity="center"
+                    android:text="Tap 'Select Image' to add a photo"
+                    android:textColor="#757575"
+                    android:textSize="14sp" />
             </FrameLayout>
 
-            <!-- Select image button -->
             <Button
                 android:id="@+id/btnSelectImage"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
+                android:layout_marginTop="8dp"
                 android:text="Select Image"
-                android:minHeight="48dp"
-                android:padding="12dp"
-                android:layout_marginTop="8dp" />
+                android:textColor="#1A1A1A"
+                app:strokeColor="#1A1A1A"/>
 
-            <!-- Product title -->
             <EditText
                 android:id="@+id/etTitle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Product Title"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#7B1FA2"
-                android:minHeight="48dp"
-                android:padding="12dp"
-                android:layout_marginTop="10dp" />
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:background="@null"
+                android:hint="What are you selling?"
+                android:importantForAutofill="no"
+                android:inputType="textCapSentences"
+                android:padding="8dp"
+                android:textColor="#1A1A1A"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-            <!-- Category + Price row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="16dp">
 
-                <!-- Category -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:background="#FCE4EC"
-                    android:padding="8dp"
-                    android:layout_marginEnd="6dp">
-
+                    android:orientation="vertical">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Category"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="#7B1FA2" />
-
+                        android:textColor="#1A1A1A"
+                        android:textSize="12sp" />
                     <Spinner
                         android:id="@+id/spCategory"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:minHeight="48dp" />
+                        android:layout_height="48dp" />
                 </LinearLayout>
 
-                <!-- Price -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:background="#FFF9C4"
-                    android:padding="8dp"
-                    android:layout_marginStart="6dp">
-
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Price (€)"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="#7B1FA2" />
-
+                        android:textColor="#1A1A1A"
+                        android:textSize="12sp" />
                     <EditText
                         android:id="@+id/etPrice"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="numberDecimal"
+                        android:layout_height="48dp"
                         android:hint="0.00"
-                        android:minHeight="48dp"
-                        android:padding="12dp" />
+                        android:importantForAutofill="no"
+                        android:inputType="numberDecimal"
+                        android:textColor="#1A1A1A" />
                 </LinearLayout>
-
             </LinearLayout>
 
-            <!-- Description label -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:text="Description"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#7B1FA2"
-                android:layout_marginTop="10dp" />
+                android:textColor="#1A1A1A"
+                android:textSize="12sp" />
 
-            <!-- Description input -->
             <EditText
                 android:id="@+id/etDescription"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="120dp"
                 android:layout_marginTop="4dp"
+                android:background="@drawable/bg_search_white"
                 android:gravity="top"
+                android:hint="Tell buyers about your item..."
+                android:importantForAutofill="no"
                 android:inputType="textMultiLine"
-                android:textColor="#757575"
-                android:textSize="14sp"
-                android:hint="Enter product description..."
-                android:minHeight="48dp"
-                android:padding="12dp" />
+                android:padding="12dp"
+                android:textColor="#1A1A1A" />
 
-            <!-- Post button -->
             <Button
                 android:id="@+id/btnPost"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Post Product"
-                android:textAllCaps="true"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#7B1FA2"
-                android:minHeight="48dp"
-                android:padding="12dp"
-                android:layout_marginTop="12dp" />
+                android:layout_height="60dp"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="#FFD33D"
+                android:text="Publish Item"
+                android:textColor="#1A1A1A"
+                android:textStyle="bold"
+                app:cornerRadius="8dp" />
 
         </LinearLayout>
-
     </androidx.cardview.widget.CardView>
-
 </ScrollView>
