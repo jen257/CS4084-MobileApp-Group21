@@ -15,6 +15,7 @@ import androidx.navigation.Navigation;
 import com.example.reloop.R;
 import com.example.reloop.ui.settings.viewmodel.SettingsViewModel;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class SettingsFragment extends Fragment {
 
@@ -41,20 +42,13 @@ public class SettingsFragment extends Fragment {
         btnLogout = view.findViewById(R.id.btnLogout);
 
         setupObservers();
-        setupListeners(); // Removed 'view' parameter as it was unused
+        setupListeners();
     }
 
     private void setupObservers() {
         settingsViewModel.getNotificationStatus().observe(getViewLifecycleOwner(), isEnabled -> {
             if (switchNotifications.isChecked() != isEnabled) {
                 switchNotifications.setChecked(isEnabled);
-            }
-        });
-
-        settingsViewModel.getNavigateToLogin().observe(getViewLifecycleOwner(), shouldNavigate -> {
-            if (shouldNavigate != null && shouldNavigate) {
-                // Fixed: Use action_settingsFragment_to_loginFragment
-                Navigation.findNavController(requireView()).navigate(R.id.action_settingsFragment_to_loginFragment);
             }
         });
     }
@@ -76,6 +70,10 @@ public class SettingsFragment extends Fragment {
                 settingsViewModel.setNotifications(isChecked)
         );
 
-        btnLogout.setOnClickListener(v -> settingsViewModel.logout());
+        // Perform FirebaseAuth sign out and navigate back to Login screen
+        btnLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Navigation.findNavController(requireView()).navigate(R.id.action_settingsFragment_to_loginFragment);
+        });
     }
 }

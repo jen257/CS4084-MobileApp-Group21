@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.reloop.R;
 import com.example.reloop.database.AppDataBase;
-import com.example.reloop.database.ProductDao;
-import com.example.reloop.database.ProductEntity;
+import com.example.reloop.database.daos.ProductDao;
+import com.example.reloop.database.entities.ProductEntity;
 import com.example.reloop.models.Product;
 
 import java.util.List;
@@ -41,7 +41,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Use the original layout
         View view = LayoutInflater.from(context).inflate(R.layout.item_product, parent, false);
         return new ProductViewHolder(view);
     }
@@ -50,7 +49,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Product p = productList.get(position);
 
-        // Reuse manual binding logic
         holder.txtTitle.setText(p.getTitle());
         holder.txtCategory.setText(p.getCategory());
         holder.txtPrice.setText("€ " + p.getPrice());
@@ -68,12 +66,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             holder.imgProduct.setImageResource(android.R.drawable.ic_menu_gallery);
         }
 
+        // --- NEW: Check initial wishlist state to display correct heart icon ---
+        Executors.newSingleThreadExecutor().execute(() -> {
+            boolean exists = AppDataBase.getInstance(context).productDao().isProductInWishlist(p.getPid());
+            ((android.app.Activity) context).runOnUiThread(() -> updateHeartIcon(holder.btnWant, exists));
+        });
+
         // "Want" button click logic
         holder.btnWant.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onWantClick(p);
             }
-            addToWishlist(p, holder);
+            toggleWishlist(p, holder);
         });
     }
 
@@ -82,7 +86,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         return productList.size();
     }
 
-    private void addToWishlist(Product product, ProductViewHolder holder) {
+    private void toggleWishlist(Product product, ProductViewHolder holder) {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 ProductEntity entity = ProductEntity.fromCloudProduct(product);
@@ -95,17 +99,24 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                     dao.insert(entity);
                     ((android.app.Activity) context).runOnUiThread(() -> {
                         Toast.makeText(context, "Added to wishlist!", Toast.LENGTH_SHORT).show();
+                        // FIXED: Use holder.btnWant instead of buttonToUpdate
                         updateHeartIcon(holder.btnWant, true);
                     });
                 } else {
-                    ((android.app.Activity) context).runOnUiThread(() ->
-                            Toast.makeText(context, "Already in wishlist", Toast.LENGTH_SHORT).show());
+                    // UNSAVE logic: Delete using the faster deleteById method
+                    dao.deleteById(product.getPid());
+
+                    ((android.app.Activity) context).runOnUiThread(() -> {
+                        Toast.makeText(context, "Removed from wishlist", Toast.LENGTH_SHORT).show();
+                        // FIXED: Use holder.btnWant instead of buttonToUpdate
+                        updateHeartIcon(holder.btnWant, false);
+                    });
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
                 ((android.app.Activity) context).runOnUiThread(() ->
-                        Toast.makeText(context, "Failed to add to wishlist", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(context, "Failed to update wishlist", Toast.LENGTH_SHORT).show());
             }
         });
     }

@@ -4,11 +4,6 @@ import com.google.firebase.database.IgnoreExtraProperties;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * [Member A - System Architect]
- * Core Data Model representing a Product in the Reloop Marketplace.
- * Extended with Geo-location support for Map feature.
- */
 @IgnoreExtraProperties
 public class Product implements Serializable {
 
@@ -22,20 +17,18 @@ public class Product implements Serializable {
     public String category;     // Item category (e.g., Electronics, Clothing)
     public boolean isSold;      // Availability status (True if item is no longer for sale)
 
+    public Location location;   // Geographical location of the product (Legacy/Custom)
+    public double latitude;
+    public double longitude;
 
-    public Location location;   // Geographical location of the product
-
-    /**
-     * Required default constructor for Firebase DataSnapshot.getValue(Product.class)
-     */
     public Product() {
+        this.latitude = 0.0;
+        this.longitude = 0.0;
     }
 
-    /**
-     * Full constructor for manual object creation.
-     */
     public Product(String pid, String title, String description, String price,
-                   String category, String imageUrl, String sellerId, Location location) {
+                   String category, String imageUrl, String sellerId, Location location,
+                   double latitude, double longitude) {
         this.pid = pid;
         this.title = title;
         this.description = description;
@@ -45,6 +38,8 @@ public class Product implements Serializable {
         this.sellerId = sellerId;
         this.location = location;
         this.isSold = false; // Default status is always Available
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     // ===== Getters and Setters =====
@@ -59,6 +54,10 @@ public class Product implements Serializable {
     public boolean isSold() { return isSold; }
     public Location getLocation() { return location; }
 
+    // New Coordinate Getters
+    public double getLatitude() { return latitude; }
+    public double getLongitude() { return longitude; }
+
     public void setPid(String pid) { this.pid = pid; }
     public void setSellerId(String sellerId) { this.sellerId = sellerId; }
     public void setTitle(String title) { this.title = title; }
@@ -68,6 +67,10 @@ public class Product implements Serializable {
     public void setCategory(String category) { this.category = category; }
     public void setSold(boolean sold) { isSold = sold; }
     public void setLocation(Location location) { this.location = location; }
+
+    // Coordinate Setters
+    public void setLatitude(double latitude) { this.latitude = latitude; }
+    public void setLongitude(double longitude) { this.longitude = longitude; }
 
     // ===== Utility Methods =====
 
@@ -110,11 +113,9 @@ public class Product implements Serializable {
         return pid != null ? pid.hashCode() : 0;
     }
 
-    /**
-     * Static factory method for creating new product instances before pushing to Firebase.
-     */
     public static Product createNew(String title, String description, String price,
-                                    String category, String imageUrl, String sellerId, Location location) {
-        return new Product(null, title, description, price, category, imageUrl, sellerId, location);
+                                    String category, String imageUrl, String sellerId,
+                                    Location location, double latitude, double longitude) {
+        return new Product(null, title, description, price, category, imageUrl, sellerId, location, latitude, longitude);
     }
 }

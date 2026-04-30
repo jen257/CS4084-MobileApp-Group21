@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="primary_brand">#2E7D32</color>
+    <color name="brand_yellow">#FFD54F</color>
     <color name="app_background">#FFFFFF</color>
     <color name="main_text">#000000</color>
 

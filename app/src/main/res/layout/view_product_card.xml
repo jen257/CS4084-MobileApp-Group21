@@ -14,7 +14,6 @@
         android:orientation="horizontal"
         android:padding="12dp">
 
-        <!-- Product Image -->
         <ImageView
             android:id="@+id/productImage"
             android:layout_width="120dp"
@@ -30,16 +29,30 @@
             android:layout_marginStart="12dp"
             android:orientation="vertical">
 
-            <!-- Product Name (Title) -->
-            <TextView
-                android:id="@+id/productName"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/product_name"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:layout_height="wrap_content">
 
-            <!-- Product Price -->
+                <TextView
+                    android:id="@+id/productName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/want_button"
+                    android:text="@string/product_name"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/want_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_alignParentEnd="true"
+                    android:background="?attr/selectableItemBackground"
+                    android:text="♡ Save"
+                    android:textSize="12sp"
+                    android:textColor="#FF666666" />
+            </RelativeLayout>
+
             <TextView
                 android:id="@+id/productPrice"
                 android:layout_width="match_parent"
@@ -50,7 +63,6 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <!-- Product Description -->
             <TextView
                 android:id="@+id/productDescription"
                 android:layout_width="match_parent"
@@ -62,14 +74,12 @@
                 android:textSize="14sp"
                 android:textColor="@color/gray_dark" />
 
-            <!-- Category and Availability in a row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:orientation="horizontal">
 
-                <!-- Category -->
                 <TextView
                     android:id="@+id/category"
                     android:layout_width="0dp"
@@ -78,7 +88,6 @@
                     android:text="@string/product_category"
                     android:textSize="12sp" />
 
-                <!-- Availability Status -->
                 <TextView
                     android:id="@+id/availability"
                     android:layout_width="wrap_content"
@@ -86,10 +95,8 @@
                     android:text="@string/product_available"
                     android:textSize="12sp"
                     android:textStyle="bold" />
-
             </LinearLayout>
 
-            <!-- Seller ID -->
             <TextView
                 android:id="@+id/sellerName"
                 android:layout_width="match_parent"
@@ -99,7 +106,5 @@
                 android:textSize="12sp" />
 
         </LinearLayout>
-
     </LinearLayout>
-
 </androidx.cardview.widget.CardView>

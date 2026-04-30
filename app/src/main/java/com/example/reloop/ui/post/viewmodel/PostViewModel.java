@@ -1,17 +1,12 @@
 package com.example.reloop.ui.post.viewmodel;
 
 import android.net.Uri;
-
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
 import com.example.reloop.models.Product;
 import com.example.reloop.repository.ProductRepository;
 import com.example.reloop.utils.ImageLoader;
 
-/**
- * ViewModel for handling product posting logic.
- */
 public class PostViewModel extends ViewModel {
 
     private final ProductRepository repository;
@@ -27,14 +22,16 @@ public class PostViewModel extends ViewModel {
     }
 
     /**
-     * Main function to handle product posting.
+     * Updated to include latitude and longitude for proximity searching.
      */
     public void postProduct(String title,
                             String category,
                             String description,
                             double price,
                             Uri imageUri,
-                            String sellerId) {
+                            String sellerId,
+                            double latitude,
+                            double longitude) {
 
         // Basic validation
         if (title.isEmpty() || category.isEmpty() || description.isEmpty()) {
@@ -49,12 +46,12 @@ public class PostViewModel extends ViewModel {
 
         isLoading.setValue(true);
 
-        // Upload image to Firebase Storage
+        // 1. Upload image to Firebase Storage
         imageLoader.uploadImage(imageUri, new ImageLoader.ImageUploadCallback() {
             @Override
             public void onSuccess(String imageUrl) {
 
-                // Create product object
+                // 2. Create product object with Location data
                 Product product = new Product();
                 product.setTitle(title);
                 product.setCategory(category);
@@ -64,7 +61,11 @@ public class PostViewModel extends ViewModel {
                 product.setSellerId(sellerId);
                 product.setSold(false);
 
-                // Save to Firebase Realtime DB
+                // Set the geo-coordinates for the distance filter
+                product.setLatitude(latitude);
+                product.setLongitude(longitude);
+
+                // 3. Save to Firebase Realtime DB
                 repository.addProduct(product, new ProductRepository.OperationCallback() {
                     @Override
                     public void onSuccess() {

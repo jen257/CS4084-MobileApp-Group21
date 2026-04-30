@@ -17,7 +17,8 @@ import com.example.reloop.models.Message;
 import com.example.reloop.ui.message.adapters.MessageAdapter;
 import com.example.reloop.ui.message.viewmodel.ChatViewModel;
 import java.util.ArrayList;
-import java.util.List;
+import com.example.reloop.repository.MessageRepository;
+import com.example.reloop.ui.message.viewmodel.MessageViewModelFactory;
 
 public class ChatFragment extends Fragment {
     private ChatViewModel chatViewModel;
@@ -55,24 +56,22 @@ public class ChatFragment extends Fragment {
     }
 
     private void setupViewModel() {
-        chatViewModel = new ViewModelProvider(this).get(ChatViewModel.class);
+        // You must initialize your local Room DB and Repository here
+        com.example.reloop.database.AppDataBase db = com.example.reloop.database.AppDataBase.getInstance(requireContext());
+        MessageRepository repo = new MessageRepository(db.messageDao());
+        MessageViewModelFactory factory = new MessageViewModelFactory(repo);
 
-        // Observe messages
+        chatViewModel = new ViewModelProvider(this, factory).get(ChatViewModel.class);
+
         chatViewModel.getMessages().observe(getViewLifecycleOwner(), messages -> {
-            messageAdapter.setMessages(messages);
-            scrollToBottom();
-        });
-
-        // Observe loading state
-        chatViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            // Handle loading state
-        });
-
-        // Observe errors
-        chatViewModel.getError().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) {
-                // Show error message
+            if (messages != null) {
+                messageAdapter.setMessages(messages);
+                scrollToBottom();
             }
+        });
+
+        chatViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            // Optional: toggle a progress bar
         });
     }
 

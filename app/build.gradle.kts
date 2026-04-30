@@ -5,6 +5,9 @@ plugins {
 }
 
 android {
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
     namespace = "com.example.reloop"
     compileSdk = 36
 
@@ -78,3 +81,4 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.0.1")
 
 }
+
