@@ -1,7 +1,25 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
     <style name="Base.Theme.Reloop" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+
+        <!-- Primary color -->
+        <item name="colorPrimary">@color/brand_yellow</item>
+
+        <!-- Background -->
+        <item name="android:colorBackground">@color/brand_black</item>
+
+        <!-- Text -->
+        <item name="android:textColorPrimary">@color/white</item>
+
+        <!-- Buttons / Secondary color -->
+        <item name="colorSecondary">@color/brand_yellow</item>
+
+        <!--  Active controls (e.g. cursor, switches) -->
+        <item name="colorControlActivated">@color/brand_yellow</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/brand_black</item>
+
     </style>
+
 </resources>

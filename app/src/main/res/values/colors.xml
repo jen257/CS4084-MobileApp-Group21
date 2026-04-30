@@ -1,27 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_brand">#2E7D32</color>
-    <color name="brand_yellow">#FFD54F</color>
-    <color name="app_background">#FFFFFF</color>
-    <color name="main_text">#000000</color>
 
-    <color name="primary">#2E7D32</color>
-    <color name="primary_color">#2E7D32</color>
+    <!-- Brand Theme Colors -->
+    <color name="brand_yellow">#FFD33D</color> <!-- Main yellow (softer tone) -->
+    <color name="brand_black">#1A1A1A</color> <!-- Dark charcoal black -->
+
+    <!-- Background -->
+    <color name="bg_cream">#FFF7E0</color>
+
+    <!-- Neutral -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <!-- Text -->
+    <color name="main_text">@color/brand_black</color>
+
+    <!--  Gray System -->
     <color name="gray_light">#F5F5F5</color>
     <color name="gray_medium">#9E9E9E</color>
     <color name="gray_dark">#424242</color>
 
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
+    <!-- Remove green dominance -->
+    <!-- (Kept but no longer used as primary color) -->
+    <color name="primary_brand">#2E7D32</color>
+
+    <!-- Status / Accent -->
     <color name="red">#F44336</color>
     <color name="green">#4CAF50</color>
-    <color name="yellow">#FFEB3B</color>
     <color name="orange">#FF9800</color>
 
-    <!-- Message specific colors -->
-    <color name="message_sent_bg">#2E7D32</color>
-    <color name="message_received_bg">#F5F5F5</color>
-    <color name="message_sent_text">#FFFFFF</color>
-    <color name="message_received_text">#000000</color>
-    <color name="sender_name_text">#2E7D32</color>
+    <!-- Message UI (adjusted to new theme) -->
+    <color name="message_sent_bg">@color/brand_yellow</color>
+    <color name="message_received_bg">@color/gray_light</color>
+    <color name="message_sent_text">@color/brand_black</color>
+    <color name="message_received_text">@color/brand_black</color>
+    <color name="sender_name_text">@color/brand_black</color>
+
 </resources>

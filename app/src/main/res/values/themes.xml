@@ -1,9 +1,32 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
     <style name="Base.Theme.Reloop" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <!-- Primary color -->
+        <item name="colorPrimary">@color/brand_yellow</item>
+        <item name="colorPrimaryContainer">@color/brand_yellow</item>
+
+        <!-- Content on primary color -->
+        <item name="colorOnPrimary">@color/brand_black</item>
+
+        <!-- Background -->
+        <item name="android:colorBackground">@color/bg_cream</item>
+
+        <!-- Primary text -->
+        <item name="android:textColorPrimary">@color/brand_black</item>
+
+        <!-- Secondary UI elements (buttons, switches, etc.) -->
+        <item name="colorSecondary">@color/brand_yellow</item>
+
+        <!--  Active controls (e.g. cursor, toggles) -->
+        <item name="colorControlActivated">@color/brand_yellow</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/brand_yellow</item>
+
     </style>
 
-    <style name="Theme.Reloop" parent="Base.Theme.Reloop" />
+    <!-- App theme entry point -->
+    <style name="Theme.Reloop" parent="Base.Theme.Reloop"/>
+
 </resources>
