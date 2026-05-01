@@ -28,6 +28,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     private Context context;
     private List<Product> productList;
     private OnWantClickListener listener;
+    private OnProductClickListener productClickListener;
 
     // For Profile Manage Mode
     private boolean isManageMode = false;
@@ -37,16 +38,22 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         void onWantClick(Product p);
     }
 
+    // NEW: Interface for the card click
+    public interface OnProductClickListener {
+        void onProductClick(Product p);
+    }
+
     // Interface for managing items
     public interface OnProductManageListener {
         void onMarkAsSold(Product p);
         void onRemoveItem(Product p);
     }
 
-    public ProductAdapter(Context context, List<Product> productList, OnWantClickListener listener) {
+    public ProductAdapter(Context context, List<Product> productList, OnWantClickListener listener, OnProductClickListener productClickListener) {
         this.context = context;
         this.productList = productList;
         this.listener = listener;
+        this.productClickListener = productClickListener;
     }
 
     // Method to enable manage mode (used in UserProductsFragment)
@@ -79,6 +86,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             holder.imgProduct.setVisibility(View.VISIBLE);
             holder.imgProduct.setImageResource(android.R.drawable.ic_menu_gallery);
         }
+
+        // Listen for clicks on the entire card to view details
+        holder.itemView.setOnClickListener(v -> {
+            if (productClickListener != null) {
+                productClickListener.onProductClick(p);
+            }
+        });
 
         // --- Overlay & Button Logic ---
         boolean isArchived = p.isSold() || p.isRemoved();

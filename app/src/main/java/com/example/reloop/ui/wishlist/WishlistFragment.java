@@ -5,10 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,6 +33,9 @@ public class WishlistFragment extends Fragment {
     private RecyclerView rvWishlist;
     private LinearLayout emptyStateLayout;
     private ProductAdapter adapter;
+
+    // NEW: Keep track of the current list so we can instantly remove items
+    private List<Product> currentWishlist = new ArrayList<>();
 
     @Nullable
     @Override
@@ -56,10 +61,32 @@ public class WishlistFragment extends Fragment {
     private void setupRecyclerView() {
         rvWishlist.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Using the existing ProductAdapter to maintain UI consistency
-        adapter = new ProductAdapter(getContext(), new ArrayList<>(), product -> {
-            // Optional: Handle item clicks here
-        });
+        adapter = new ProductAdapter(getContext(), currentWishlist,
+                // 1. The Wishlist Button Click
+                product -> {
+                    // INSTANT UI UPDATE: Remove the product from the screen immediately
+                    currentWishlist.remove(product);
+                    adapter.updateData(currentWishlist);
+
+                    // If the list is now empty, immediately show the empty state screen
+                    if (currentWishlist.isEmpty()) {
+                        rvWishlist.setVisibility(View.GONE);
+                        emptyStateLayout.setVisibility(View.VISIBLE);
+                    }
+                },
+
+                // 2. The Whole Card Click (Navigates to details)
+                product -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("product", product);
+
+                    try {
+                        Navigation.findNavController(requireView()).navigate(R.id.productDetailFragment, bundle);
+                    } catch (IllegalArgumentException e) {
+                        Toast.makeText(getContext(), "Navigation error", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
 
         rvWishlist.setAdapter(adapter);
     }
@@ -69,28 +96,32 @@ public class WishlistFragment extends Fragment {
      */
     private void loadWishlistData() {
         Executors.newSingleThreadExecutor().execute(() -> {
-            // 1. Fetch all product entities from local wishlist table [cite: 145]
+            // 1. Fetch all product entities from local wishlist table
             List<ProductEntity> savedEntities = AppDataBase.getInstance(getContext())
                     .productDao().getAllWishlistProducts();
 
-            // 2. Convert entities to the Product model for the adapter [cite: 165]
-            List<Product> savedProducts = new ArrayList<>();
+            // 2. Convert entities to the Product model for the adapter
+            List<Product> fetchedProducts = new ArrayList<>();
             for (ProductEntity entity : savedEntities) {
-                savedProducts.add(entity.toCloudProduct());
+                fetchedProducts.add(entity.toCloudProduct());
             }
 
             // 3. Update UI on the main thread
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
-                    if (savedProducts.isEmpty()) {
+                    // Update our local list with the fresh data from the database
+                    currentWishlist.clear();
+                    currentWishlist.addAll(fetchedProducts);
+
+                    if (currentWishlist.isEmpty()) {
                         rvWishlist.setVisibility(View.GONE);
                         emptyStateLayout.setVisibility(View.VISIBLE);
                     } else {
                         rvWishlist.setVisibility(View.VISIBLE);
                         emptyStateLayout.setVisibility(View.GONE);
 
-                        // Update adapter data [cite: 46]
-                        adapter.updateData(savedProducts);
+                        // Update adapter data
+                        adapter.updateData(currentWishlist);
                     }
                 });
             }

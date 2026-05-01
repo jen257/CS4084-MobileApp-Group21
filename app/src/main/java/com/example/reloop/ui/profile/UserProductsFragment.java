@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -60,11 +61,32 @@ public class UserProductsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Initializes the RecyclerView with all required listeners
+     */
     private void setupRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ProductAdapter(requireContext(), new ArrayList<>(), p -> {});
 
-        // Enable Manage Mode and Listen for Menu Clicks
+        // 1. Initialize Adapter with the click listeners
+        adapter = new ProductAdapter(getContext(), new ArrayList<>(),
+                // Listener 1: Wishlist Click (Hidden in manage mode, but required by constructor)
+                product -> {},
+
+                // Listener 2: Whole Card Click (Navigate to details)
+                product -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("product", product);
+
+                    try {
+                        // Use direct destination ID since nav_graph action might not be set up from here
+                        Navigation.findNavController(requireView()).navigate(R.id.productDetailFragment, bundle);
+                    } catch (IllegalArgumentException e) {
+                        Toast.makeText(getContext(), "Navigation error", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
+        // 2. Enable Manage Mode for this specific screen
         adapter.setManageMode(true, new ProductAdapter.OnProductManageListener() {
             @Override
             public void onMarkAsSold(Product p) {

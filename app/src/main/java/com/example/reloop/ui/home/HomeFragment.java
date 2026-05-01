@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.navigation.Navigation;
 
 import com.example.reloop.R;
 import com.example.reloop.models.Product;
@@ -176,8 +177,23 @@ public class HomeFragment extends Fragment {
     private void setupProductRecycler(View root) {
         RecyclerView recyclerView = root.findViewById(R.id.recycler_home_products);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        productAdapter = new ProductAdapter(getContext(), displayList, product ->
-                Toast.makeText(getContext(), "Selected: " + product.getTitle(), Toast.LENGTH_SHORT).show()
+
+        // UPDATED: Passing TWO listeners to the adapter constructor
+        productAdapter = new ProductAdapter(getContext(), displayList,
+                // 1. The Wishlist Button Click
+                product -> {},
+
+                // 2. The Whole Card Click (Navigates to details)
+                product -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("product", product);
+
+                    try {
+                        Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_productDetailFragment, bundle);
+                    } catch (IllegalArgumentException e) {
+                        Toast.makeText(getContext(), "Navigation error: check nav_graph action ID", Toast.LENGTH_SHORT).show();
+                    }
+                }
         );
         recyclerView.setAdapter(productAdapter);
     }
