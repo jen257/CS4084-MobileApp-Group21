@@ -63,12 +63,12 @@
         android:label="Sell"
         tools:layout="@layout/fragment_post" />
 
-    <!-- Messaging Feature - As Bottom Navigation Item -->
     <fragment
         android:id="@+id/messageFragment"
         android:name="com.example.reloop.ui.message.ConversationListFragment"
         android:label="Messages"
         tools:layout="@layout/fragment_conversations">
+
         <action
             android:id="@+id/action_messageFragment_to_chatFragment"
             app:destination="@id/chatFragment" />
@@ -90,21 +90,15 @@
             app:destination="@id/editProfileFragment" />
     </fragment>
 
-    <!-- Secondary Pages (Not Directly Accessed via Bottom Navigation) -->
     <fragment
         android:id="@+id/chatFragment"
         android:name="com.example.reloop.ui.message.ChatFragment"
         android:label="Chat"
         tools:layout="@layout/fragment_chat">
-        <argument
-            android:name="conversationId"
-            app:argType="string" />
-        <argument
-            android:name="otherUserId"
-            app:argType="string" />
-        <argument
-            android:name="productId"
-            app:argType="string" />
+        <argument android:name="conversationId" app:argType="string" />
+        <argument android:name="otherUserId" app:argType="string" />
+        <argument android:name="productId" app:argType="string" />
+        <argument android:name="otherUserName" app:argType="string" app:nullable="true" />
     </fragment>
 
     <fragment
@@ -131,15 +125,12 @@
             app:destination="@id/loginFragment"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
-        <!-- Action from Settings to Personal Profile -->
         <action
             android:id="@+id/action_settingsFragment_to_personalProfileFragment"
             app:destination="@id/personalProfileFragment" />
-        <!-- NEW: Action from Settings to Security -->
         <action
             android:id="@+id/action_settingsFragment_to_securityFragment"
             app:destination="@id/securityFragment" />
-        <!-- NEW: Action from Settings to Address -->
         <action
             android:id="@+id/action_settingsFragment_to_addressFragment"
             app:destination="@id/addressFragment" />
@@ -168,16 +159,11 @@
             android:defaultValue="false" />
     </fragment>
 
-    <!-- ========================================== -->
-    <!-- NEW: Personal Profile & Related Sub-pages  -->
-    <!-- ========================================== -->
-
     <fragment
         android:id="@+id/personalProfileFragment"
         android:name="com.example.reloop.ui.profile.PersonalProfileFragment"
         android:label="Personal Profile"
-        tools:layout="@layout/fragment_personal_profile">
-        <!-- Also keeping these here just in case you navigate from Personal Profile later -->
+        tools:layout="@layout/fragment_personal_profile">>
         <action
             android:id="@+id/action_personalProfileFragment_to_securityFragment"
             app:destination="@id/securityFragment" />
@@ -196,12 +182,12 @@
         android:id="@+id/securityFragment"
         android:name="com.example.reloop.ui.settings.SecurityFragment"
         android:label="Account Security"
-        tools:layout="@layout/fragment_security" />
+        tools:layout="@layout/fragment_account_security" />
 
     <fragment
         android:id="@+id/addressFragment"
         android:name="com.example.reloop.ui.settings.AddressFragment"
         android:label="Address Management"
-        tools:layout="@layout/fragment_address" />
+        tools:layout="@layout/fragment_address_management" />
 
 </navigation>

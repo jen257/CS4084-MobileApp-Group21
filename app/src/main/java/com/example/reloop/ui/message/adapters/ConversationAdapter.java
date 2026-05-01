@@ -3,23 +3,24 @@ package com.example.reloop.ui.message.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
 import com.example.reloop.R;
 import com.example.reloop.models.Conversation;
-import com.example.reloop.models.Message;
+import com.google.firebase.auth.FirebaseAuth;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Calendar;
 
 public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.ConversationViewHolder> {
     private List<Conversation> conversations;
-    private OnConversationClickListener listener;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    private final OnConversationClickListener listener;
 
     public ConversationAdapter(List<Conversation> conversations, OnConversationClickListener listener) {
         this.conversations = conversations != null ? conversations : new ArrayList<>();
@@ -29,8 +30,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     @NonNull
     @Override
     public ConversationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_conversation, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_conversation, parent, false);
         return new ConversationViewHolder(view);
     }
 
@@ -38,100 +38,59 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     public void onBindViewHolder(@NonNull ConversationViewHolder holder, int position) {
         Conversation conversation = conversations.get(position);
         holder.bind(conversation);
-
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onConversationClick(conversation);
-            }
+            if (listener != null) listener.onConversationClick(conversation);
         });
     }
 
     @Override
-    public int getItemCount() {
-        return conversations.size();
-    }
-
-    public void updateConversations(List<Conversation> newConversations) {
-        this.conversations = newConversations != null ? newConversations : new ArrayList<>();
-        notifyDataSetChanged();
-    }
-
-    public void addConversation(Conversation conversation) {
-        if (conversation != null) {
-            this.conversations.add(0, conversation);
-            notifyItemInserted(0);
-        }
-    }
-
-    public void updateConversation(Conversation updatedConversation) {
-        for (int i = 0; i < conversations.size(); i++) {
-            if (conversations.get(i).getId().equals(updatedConversation.getId())) {
-                conversations.set(i, updatedConversation);
-                notifyItemChanged(i);
-                break;
-            }
-        }
-    }
+    public int getItemCount() { return conversations.size(); }
 
     public void setConversations(List<Conversation> conversations) {
         this.conversations = conversations != null ? conversations : new ArrayList<>();
         notifyDataSetChanged();
     }
 
-    class ConversationViewHolder extends RecyclerView.ViewHolder {
-        private TextView userName;
-        private TextView lastMessage;
-        private TextView timestamp;
-        private TextView unreadCount;
+    public static class ConversationViewHolder extends RecyclerView.ViewHolder {
+        private final TextView userName, lastMessage, timestamp;
+        private final ImageView profileImage;
+        private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        private final SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
 
-        ConversationViewHolder(@NonNull View itemView) {
+        public ConversationViewHolder(@NonNull View itemView) {
             super(itemView);
             userName = itemView.findViewById(R.id.user_name);
             lastMessage = itemView.findViewById(R.id.last_message);
             timestamp = itemView.findViewById(R.id.timestamp);
-            unreadCount = itemView.findViewById(R.id.unread_count);
+            profileImage = itemView.findViewById(R.id.user_avatar);
         }
 
         void bind(Conversation conversation) {
-            // Set participant name
-            userName.setText(conversation.getOtherParticipantName() != null ?
-                    conversation.getOtherParticipantName() : "Unknown User");
+            String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-            // Set last message
-            Message lastMsg = conversation.getLastMessage();
-            if (lastMsg != null) {
-                lastMessage.setText(lastMsg.getContent());
+            // Display the OTHER person's name
+            userName.setText(conversation.getDisplayName(currentUid));
+            lastMessage.setText(conversation.getLastMessageText());
 
-                if (lastMsg.getTimestamp() != null) {
-                    if (isToday(lastMsg.getTimestamp().getTime())) {
-                        timestamp.setText(timeFormat.format(lastMsg.getTimestamp()));
-                    } else {
-                        timestamp.setText(dateFormat.format(lastMsg.getTimestamp()));
-                    }
-                } else {
-                    timestamp.setText("");
-                }
-            } else {
-                lastMessage.setText("No messages yet");
-                timestamp.setText("");
-            }
+            String avatarUrl = conversation.getDisplayAvatar(currentUid);
+            Glide.with(itemView.getContext())
+                    .load(avatarUrl)
+                    .placeholder(R.drawable.deafult_contact_person_avatar)
+                    .circleCrop()
+                    .into(profileImage);
 
-            // Set unread count
-            if (conversation.getUnreadCount() > 0) {
-                unreadCount.setVisibility(View.VISIBLE);
-                unreadCount.setText(String.valueOf(conversation.getUnreadCount()));
-            } else {
-                unreadCount.setVisibility(View.GONE);
+            if (conversation.getLastUpdatedLong() != null) {
+                long time = conversation.getLastUpdatedLong();
+                timestamp.setText(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(time)));
             }
         }
 
-        private boolean isToday(long timestamp) {
+        private boolean isToday(long time) {
             Calendar today = Calendar.getInstance();
-            Calendar messageDate = Calendar.getInstance();
-            messageDate.setTimeInMillis(timestamp);
-
-            return today.get(Calendar.YEAR) == messageDate.get(Calendar.YEAR) &&
-                    today.get(Calendar.DAY_OF_YEAR) == messageDate.get(Calendar.DAY_OF_YEAR);
+            Calendar date = Calendar.getInstance();
+            date.setTimeInMillis(time);
+            return today.get(Calendar.YEAR) == date.get(Calendar.YEAR) &&
+                    today.get(Calendar.DAY_OF_YEAR) == date.get(Calendar.DAY_OF_YEAR);
         }
     }
 

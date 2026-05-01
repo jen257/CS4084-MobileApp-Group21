@@ -17,8 +17,8 @@
 
         <ImageView
             android:id="@+id/ivAvatar"
-            android:layout_width="200dp"
-            android:layout_height="120dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:src="@drawable/img_profile"
             android:contentDescription="User Avatar"
             tools:ignore="HardcodedText"

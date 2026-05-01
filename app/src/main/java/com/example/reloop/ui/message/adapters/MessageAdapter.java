@@ -18,7 +18,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private List<Message> messages;
     private String currentUserId;
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
     public MessageAdapter(List<Message> messages, String currentUserId) {
         this.messages = messages;
@@ -35,21 +35,18 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == TYPE_SENT) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_message_sent, parent, false);
-            return new SentMessageViewHolder(view);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_sent, parent, false);
+            return new SentMessageViewHolder(view, timeFormat);
         } else {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_message_received, parent, false);
-            return new ReceivedMessageViewHolder(view);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_received, parent, false);
+            return new ReceivedMessageViewHolder(view, timeFormat);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Message message = messages.get(position);
-
-        if (holder.getItemViewType() == TYPE_SENT) {
+        if (holder instanceof SentMessageViewHolder) {
             ((SentMessageViewHolder) holder).bind(message);
         } else {
             ((ReceivedMessageViewHolder) holder).bind(message);
@@ -66,43 +63,49 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         notifyDataSetChanged();
     }
 
-    // ViewHolder for sent messages
     static class SentMessageViewHolder extends RecyclerView.ViewHolder {
-        private TextView messageText;
-        private TextView timeText;
+        private final TextView messageText, timeText;
+        private final SimpleDateFormat timeFormat;
 
-        SentMessageViewHolder(@NonNull View itemView) {
+        SentMessageViewHolder(@NonNull View itemView, SimpleDateFormat format) {
             super(itemView);
             messageText = itemView.findViewById(R.id.message_text);
             timeText = itemView.findViewById(R.id.time_text);
+            this.timeFormat = format;
         }
 
         void bind(Message message) {
             messageText.setText(message.getContent());
-            timeText.setText(new SimpleDateFormat("HH:mm", Locale.getDefault())
-                    .format(message.getTimestamp()));
+            // Safe binding to prevent null timestamp crash
+            if (message.getTimestamp() != null) {
+                timeText.setText(timeFormat.format(message.getTimestamp()));
+            } else {
+                timeText.setText("--:--");
+            }
         }
     }
 
-    // ViewHolder for received messages
     static class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
-        private TextView messageText;
-        private TextView timeText;
-        private TextView senderName;
+        private final TextView messageText, timeText, senderName;
+        private final SimpleDateFormat timeFormat;
 
-        ReceivedMessageViewHolder(@NonNull View itemView) {
+        ReceivedMessageViewHolder(@NonNull View itemView, SimpleDateFormat format) {
             super(itemView);
             messageText = itemView.findViewById(R.id.message_text);
             timeText = itemView.findViewById(R.id.time_text);
             senderName = itemView.findViewById(R.id.sender_name);
+            this.timeFormat = format;
         }
 
         void bind(Message message) {
             messageText.setText(message.getContent());
-            timeText.setText(new SimpleDateFormat("HH:mm", Locale.getDefault())
-                    .format(message.getTimestamp()));
-            senderName.setText(message.getSenderName() != null ?
-                    message.getSenderName() : "User");
+            senderName.setText(message.getSenderName() != null ? message.getSenderName() : "User");
+            // Safe binding to prevent null timestamp crash
+            if (message.getTimestamp() != null) {
+                timeText.setText(timeFormat.format(message.getTimestamp()));
+            } else {
+                timeText.setText("--:--");
+            }
         }
     }
 }

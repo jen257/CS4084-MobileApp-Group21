@@ -1,93 +1,53 @@
 package com.example.reloop.models;
 
-import java.util.Date;
-import java.util.Objects;
+import java.io.Serializable;
 
-public class Conversation {
+public class Conversation implements Serializable {
     private String id;
     private String participantA;
     private String participantB;
+    private String lastMessageText;
+    private Long lastUpdatedLong;
     private String productId;
-    private Message lastMessage;
-    private Date lastUpdated;
-    private int unreadCount;
-    private String productTitle;
-    private String productImage;
-    private String otherParticipantName;
-    private String otherParticipantId;
+    private String name_A;
+    private String name_B;
+    private String avatar_A;
+    private String avatar_B;
 
-    public Conversation() {
-        // Firebase需要的空构造方法
+    public Conversation() {}
+
+    public String getDisplayName(String currentUserId) {
+        return currentUserId.equals(participantA) ? name_B : name_A;
     }
 
-    public Conversation(String participantA, String participantB, String productId) {
-        this.participantA = participantA;
-        this.participantB = participantB;
-        this.productId = productId;
-        this.lastUpdated = new Date();
-        this.unreadCount = 0;
-        this.id = generateConversationId(participantA, participantB, productId);
+    public String getDisplayAvatar(String currentUserId) {
+        return currentUserId.equals(participantA) ? avatar_B : avatar_A;
     }
 
-    public static String generateConversationId(String user1, String user2, String productId) {
-        String userA = user1.compareTo(user2) < 0 ? user1 : user2;
-        String userB = user1.compareTo(user2) < 0 ? user2 : user1;
-        return userA + "_" + userB + "_" + productId;
-    }
-
-    // Getters and Setters
+    // Getters and Setters for all fields
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
-
     public String getParticipantA() { return participantA; }
     public void setParticipantA(String participantA) { this.participantA = participantA; }
-
     public String getParticipantB() { return participantB; }
     public void setParticipantB(String participantB) { this.participantB = participantB; }
-
+    public String getLastMessageText() { return lastMessageText; }
+    public void setLastMessageText(String lastMessageText) { this.lastMessageText = lastMessageText; }
+    public Long getLastUpdatedLong() { return lastUpdatedLong; }
+    public void setLastUpdatedLong(Long lastUpdatedLong) { this.lastUpdatedLong = lastUpdatedLong; }
     public String getProductId() { return productId; }
     public void setProductId(String productId) { this.productId = productId; }
-
-    public Message getLastMessage() { return lastMessage; }
-    public void setLastMessage(Message lastMessage) {
-        this.lastMessage = lastMessage;
-        if (lastMessage != null) {
-            this.lastUpdated = lastMessage.getTimestamp();
-        }
-    }
-
-    public Date getLastUpdated() { return lastUpdated; }
-    public void setLastUpdated(Date lastUpdated) { this.lastUpdated = lastUpdated; }
-
-    public int getUnreadCount() { return unreadCount; }
-    public void setUnreadCount(int unreadCount) { this.unreadCount = unreadCount; }
-
-    public String getProductTitle() { return productTitle; }
-    public void setProductTitle(String productTitle) { this.productTitle = productTitle; }
-
-    public String getProductImage() { return productImage; }
-    public void setProductImage(String productImage) { this.productImage = productImage; }
-
-    public String getOtherParticipantName() { return otherParticipantName; }
-    public void setOtherParticipantName(String otherParticipantName) { this.otherParticipantName = otherParticipantName; }
-
-    public String getOtherParticipantId() { return otherParticipantId; }
-    public void setOtherParticipantId(String otherParticipantId) { this.otherParticipantId = otherParticipantId; }
+    public String getName_A() { return name_A; }
+    public void setName_A(String name_A) { this.name_A = name_A; }
+    public String getName_B() { return name_B; }
+    public void setName_B(String name_B) { this.name_B = name_B; }
+    public String getAvatar_A() { return avatar_A; }
+    public void setAvatar_A(String avatar_A) { this.avatar_A = avatar_A; }
+    public String getAvatar_B() { return avatar_B; }
+    public void setAvatar_B(String avatar_B) { this.avatar_B = avatar_B; }
 
     public String getOtherParticipant(String currentUserId) {
-        return participantA.equals(currentUserId) ? participantB : participantA;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Conversation that = (Conversation) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+        if (currentUserId == null || participantA == null) return participantB;
+        return currentUserId.equals(participantA) ? participantB : participantA;
     }
 }
