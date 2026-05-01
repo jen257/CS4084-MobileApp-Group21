@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Account Security"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="32dp"/>
+
+        <!-- Email Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Change Email"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/brand_black"
+            android:layout_marginBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/etNewEmailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="Enter New Email"
+            android:inputType="textEmailAddress"
+            android:textColor="#333333"
+            android:textColorHint="#9E9E9E"
+            android:padding="12dp"
+            android:background="@drawable/bg_search_white"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnUpdateEmail"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Update Email"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/brand_yellow"
+            android:textColor="@color/brand_black"
+            android:layout_marginBottom="40dp"/>
+
+        <!-- Password Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Change Password"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/brand_black"
+            android:layout_marginBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/etNewPassword"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="New Password"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:textColor="#333333"
+            android:textColorHint="#9E9E9E"
+            android:background="@drawable/bg_search_white"
+            android:layout_marginBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/etConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="Confirm New Password"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:textColor="#333333"
+            android:textColorHint="#9E9E9E"
+            android:background="@drawable/bg_search_white"
+            android:layout_marginBottom="16dp"/>
+
+        <Button
+            android:id="@+id/btnUpdatePassword"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Update Password"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/brand_yellow"
+            android:textColor="@color/brand_black"
+            android:textStyle="bold"/>
+    </LinearLayout>
+</ScrollView>

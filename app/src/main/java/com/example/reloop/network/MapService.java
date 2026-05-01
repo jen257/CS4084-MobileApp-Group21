@@ -44,7 +44,7 @@ public class MapService {
     private final ExecutorService executorService;
     private final String apiKey;
 
-    // Fix: Make it non-static to allow usage
+    // Make it non-static to allow usage
     private static MapService instance;
 
     /**
@@ -75,7 +75,6 @@ public class MapService {
         }
     }
 
-    // Fix: Add static getInstance method
     public static synchronized MapService getInstance(@NonNull Context context) {
         if (instance == null) {
             instance = new MapService(context);
@@ -83,14 +82,9 @@ public class MapService {
         return instance;
     }
 
-    /**
-     * Get walking directions between two points
-     */
     public void getDirections(@NonNull LatLng origin, @NonNull LatLng destination,
                               @NonNull DirectionsCallback callback) {
         if (!validateApiKey(callback)) return;
-
-        // Fix: Use Locale.US for consistent formatting
         String url = String.format(Locale.US, "%s?origin=%f,%f&destination=%f,%f&mode=walking&key=%s",
                 DIRECTIONS_API_URL,
                 origin.latitude, origin.longitude,
@@ -125,8 +119,6 @@ public class MapService {
      */
     public void reverseGeocode(@NonNull LatLng location, @NonNull GeocodingCallback callback) {
         if (!validateApiKey(callback)) return;
-
-        // Fix: Use Locale.US for consistent formatting
         String url = String.format(Locale.US, "%s?plating=%f,%f&key=%s",
                 GEOCODING_API_URL,
                 location.latitude, location.longitude,
@@ -405,7 +397,6 @@ public class MapService {
         }
     }
 
-    // Fix: Make getters public to allow usage
     public String getPolyline(@NonNull Route route) {
         return route.getPolyline();
     }
@@ -418,7 +409,6 @@ public class MapService {
         return route.getDuration();
     }
 
-    // 回调接口
     public interface DirectionsCallback extends ErrorCallback {
         void onDirectionsReceived(@NonNull List<Route> routes);
     }

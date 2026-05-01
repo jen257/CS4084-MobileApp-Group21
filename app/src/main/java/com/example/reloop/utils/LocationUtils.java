@@ -43,6 +43,10 @@ public class LocationUtils {
 
     private static FusedLocationProviderClient fusedLocationClient;
 
+    public static void getCurrentLocation(@NonNull Context context, @NonNull OnSuccessListener<Location> onSuccess) {
+        getLastKnownLocation(context, onSuccess, e -> Log.e(TAG, "Location failed", e));
+    }
+
     // ======================== PERMISSION METHODS ========================
 
     /**

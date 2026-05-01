@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit Profile"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/brand_black"
+            android:layout_marginBottom="32dp"/>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/ivEditAvatar"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/img_profile"
+                android:scaleType="centerCrop"
+                android:background="@drawable/avatar_background"
+                android:clipToOutline="true" />
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="bottom|end"
+                android:src="@android:drawable/ic_menu_camera"
+                android:background="@drawable/circle_background"
+                android:backgroundTint="@color/brand_yellow"
+                android:padding="6dp"
+                app:tint="@color/brand_black" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Username"
+            android:layout_marginTop="32dp"
+            android:textStyle="bold"
+            android:textColor="#666666"/>
+
+        <EditText
+            android:id="@+id/etNewDisplayName"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:hint="New Username"
+            android:inputType="textPersonName"
+            android:padding="12dp"
+            android:textColor="#333333"
+            android:textColorHint="#9E9E9E"
+            android:background="@drawable/bg_search_white"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bio"
+            android:layout_marginTop="16dp"
+            android:textStyle="bold"
+            android:textColor="#666666"/>
+
+        <EditText
+            android:id="@+id/etNewBio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Tell us about yourself..."
+            android:inputType="textMultiLine"
+            android:minLines="3"
+            android:gravity="top"
+            android:padding="12dp"
+            android:textColor="#333333"
+            android:textColorHint="#9E9E9E"
+            android:background="@drawable/bg_search_white"/>
+
+        <Button
+            android:id="@+id/btnSaveProfile"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="32dp"
+            android:text="Save Changes"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/brand_yellow"
+            android:textColor="@color/brand_black"
+            android:textStyle="bold" />
+    </LinearLayout>
+</ScrollView>

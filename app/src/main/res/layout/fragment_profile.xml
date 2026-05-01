@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="#F8F9FA">
+    android:background="#FFFFFF">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,10 +17,23 @@
 
         <ImageView
             android:id="@+id/ivAvatar"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@android:drawable/ic_menu_myplaces"
+            android:layout_width="200dp"
+            android:layout_height="120dp"
+            android:src="@drawable/img_profile"
             android:contentDescription="User Avatar"
+            tools:ignore="HardcodedText"
+            android:scaleType="centerCrop"
+            android:background="@drawable/avatar_background" />
+
+        <TextView
+            android:id="@+id/tvUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/prompt_username"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginTop="16dp"
             tools:ignore="HardcodedText" />
 
         <TextView
@@ -56,7 +69,7 @@
         android:id="@+id/tvSelling"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Selling"
+        android:text="Items on sell"
         android:textSize="18sp"
         android:textColor="#333333"
         android:paddingTop="16dp"
@@ -75,7 +88,7 @@
         android:id="@+id/tvSold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sold"
+        android:text="Sold items"
         android:textSize="18sp"
         android:textColor="#333333"
         android:paddingTop="16dp"

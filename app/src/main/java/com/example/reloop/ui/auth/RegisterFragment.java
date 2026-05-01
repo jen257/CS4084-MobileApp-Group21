@@ -74,7 +74,6 @@ public class RegisterFragment extends Fragment {
     }
 
     private void setupObservers(View view) {
-        // Fixed Statement lambda can be replaced with expression lambda
         authViewModel.isLoading.observe(getViewLifecycleOwner(), isLoading ->
                 btnRegister.setLoading(isLoading)
         );

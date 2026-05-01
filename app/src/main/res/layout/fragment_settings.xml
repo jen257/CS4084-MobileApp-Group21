@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -15,6 +16,7 @@
         android:textColor="#333333"
         android:layout_marginBottom="32dp" />
 
+    <!-- Personal Profile Item -->
     <TextView
         android:id="@+id/tvPersonalProfile"
         android:layout_width="match_parent"
@@ -33,6 +35,7 @@
         android:layout_height="1dp"
         android:background="#E0E0E0" />
 
+    <!-- Address Management Item -->
     <TextView
         android:id="@+id/tvAddressManagement"
         android:layout_width="match_parent"
@@ -51,6 +54,7 @@
         android:layout_height="1dp"
         android:background="#E0E0E0" />
 
+    <!-- Account Security Item -->
     <TextView
         android:id="@+id/tvAccountSecurity"
         android:layout_width="match_parent"
@@ -69,6 +73,7 @@
         android:layout_height="1dp"
         android:background="#E0E0E0" />
 
+    <!-- Notification Switch -->
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switchNotifications"
         android:layout_width="match_parent"
@@ -89,13 +94,15 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <Button
+    <!-- Log Out Button -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:text="Log Out"
-        android:textColor="@android:color/white"
-        android:backgroundTint="#DC3545"
+        android:textColor="@color/brand_black"
+        app:backgroundTint="@color/brand_yellow"
+        app:cornerRadius="28dp"
         android:textStyle="bold"
         android:layout_marginBottom="8dp" />
 
