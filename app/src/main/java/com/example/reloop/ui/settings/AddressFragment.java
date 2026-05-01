@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.reloop.R;
+import com.example.reloop.models.AddressModel;
 import com.example.reloop.utils.LocationUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -48,14 +50,15 @@ public class AddressFragment extends Fragment {
     private RecyclerView recyclerViewAddresses;
 
     private AddressAdapter adapter;
-    private final List<String> savedAddressesList = new ArrayList<>();
+    private final List<AddressModel> savedAddressesList = new ArrayList<>();
     private DatabaseReference userAddressesRef;
 
-    // Modern Permission Launcher
+    // Tracks if we are editing an existing address or creating a new one
+    private String editingAddressKey = null;
+
     private final ActivityResultLauncher<String[]> locationPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
-                Boolean fineLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false);
-                if (fineLocationGranted != null && fineLocationGranted) {
+                if (result.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false)) {
                     getCurrentLocation();
                 } else {
                     Toast.makeText(getContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
@@ -71,7 +74,6 @@ public class AddressFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Bind UI
         etCountry = view.findViewById(R.id.etCountry);
         etCounty = view.findViewById(R.id.etCounty);
         etCity = view.findViewById(R.id.etCity);
@@ -83,26 +85,31 @@ public class AddressFragment extends Fragment {
         layoutAddressForm = view.findViewById(R.id.layoutAddressForm);
         recyclerViewAddresses = view.findViewById(R.id.recyclerViewAddresses);
 
-        // Setup RecyclerView
         recyclerViewAddresses.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new AddressAdapter(savedAddressesList);
+
+        // Initialize adapter with click listeners for Edit and Delete
+        adapter = new AddressAdapter(savedAddressesList, new AddressAdapter.OnAddressClickListener() {
+            @Override
+            public void onEditClick(AddressModel address) {
+                enterEditMode(address);
+            }
+
+            @Override
+            public void onDeleteClick(AddressModel address) {
+                deleteAddressFromFirebase(address);
+            }
+        });
         recyclerViewAddresses.setAdapter(adapter);
 
-        // Initial attempt to load list
         String uid = FirebaseAuth.getInstance().getUid();
         if (uid != null) {
             userAddressesRef = FirebaseDatabase.getInstance().getReference("users").child(uid).child("addresses");
             loadSavedAddresses();
         }
 
-        // Toggle Form Visibility
-        btnShowAddForm.setOnClickListener(v -> {
-            layoutAddressForm.setVisibility(View.VISIBLE);
-            btnShowAddForm.setVisibility(View.GONE);
-        });
-
+        btnShowAddForm.setOnClickListener(v -> showForm(true));
         btnUseGPS.setOnClickListener(v -> checkLocationPermissions());
-        btnSaveAddress.setOnClickListener(v -> saveAddressToDatabase());
+        btnSaveAddress.setOnClickListener(v -> saveOrUpdateAddress());
     }
 
     private void loadSavedAddresses() {
@@ -112,49 +119,98 @@ public class AddressFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 savedAddressesList.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    String street = dataSnapshot.child("street").getValue(String.class);
-                    String city = dataSnapshot.child("city").getValue(String.class);
-                    String county = dataSnapshot.child("county").getValue(String.class);
-                    String country = dataSnapshot.child("country").getValue(String.class);
-                    String postcode = dataSnapshot.child("postcode").getValue(String.class);
-
-                    List<String> parts = new ArrayList<>();
-                    if (street != null && !street.isEmpty()) parts.add(street);
-                    if (city != null && !city.isEmpty()) parts.add(city);
-                    if (county != null && !county.isEmpty()) parts.add(county);
-                    if (country != null && !country.isEmpty()) parts.add(country);
-                    if (postcode != null && !postcode.isEmpty()) parts.add(postcode);
-
-                    String formattedAddress = android.text.TextUtils.join(", ", parts);
-                    if (!formattedAddress.isEmpty()) {
-                        savedAddressesList.add(formattedAddress);
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    AddressModel address = ds.getValue(AddressModel.class);
+                    if (address != null) {
+                        address.key = ds.getKey();
+                        savedAddressesList.add(address);
                     }
                 }
                 adapter.notifyDataSetChanged();
-
-                if (savedAddressesList.isEmpty()) {
-                    layoutAddressForm.setVisibility(View.VISIBLE);
-                    btnShowAddForm.setVisibility(View.GONE);
-                } else {
-                    layoutAddressForm.setVisibility(View.GONE);
-                    btnShowAddForm.setVisibility(View.VISIBLE);
-                }
+                showForm(savedAddressesList.isEmpty());
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("AddressFragment", "Failed to read addresses", error.toException());
+                Log.e("AddressFragment", "Firebase Error", error.toException());
             }
         });
     }
 
+    private void enterEditMode(AddressModel address) {
+        editingAddressKey = address.key;
+        etCountry.setText(address.country);
+        etCounty.setText(address.county);
+        etCity.setText(address.city);
+        etStreet.setText(address.street);
+        etPostcode.setText(address.postcode);
+
+        btnSaveAddress.setText("Update Address");
+        showForm(true);
+        Toast.makeText(getContext(), "Edit Mode", Toast.LENGTH_SHORT).show();
+    }
+
+    private void deleteAddressFromFirebase(AddressModel address) {
+        userAddressesRef.child(address.key).removeValue()
+                .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Address deleted", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(getContext(), "Delete failed", Toast.LENGTH_SHORT).show());
+    }
+
+    private void saveOrUpdateAddress() {
+        String country = etCountry.getText().toString().trim();
+        String county = etCounty.getText().toString().trim();
+        String city = etCity.getText().toString().trim();
+        String street = etStreet.getText().toString().trim();
+        String postcode = etPostcode.getText().toString().trim();
+
+        if (country.isEmpty() || city.isEmpty()) {
+            Toast.makeText(getContext(), "Please fill in City and Country", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Map<String, Object> addressMap = new HashMap<>();
+        addressMap.put("country", country);
+        addressMap.put("county", county);
+        addressMap.put("city", city);
+        addressMap.put("street", street);
+        addressMap.put("postcode", postcode);
+
+        DatabaseReference targetRef;
+        if (editingAddressKey != null) {
+            targetRef = userAddressesRef.child(editingAddressKey); // Edit existing[cite: 1]
+        } else {
+            targetRef = userAddressesRef.push(); // Create new[cite: 1]
+        }
+
+        targetRef.setValue(addressMap).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(getContext(), "Address saved successfully!", Toast.LENGTH_SHORT).show();
+                resetForm();
+            } else {
+                Toast.makeText(getContext(), "Save failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void resetForm() {
+        editingAddressKey = null;
+        etCountry.setText("");
+        etCounty.setText("");
+        etCity.setText("");
+        etStreet.setText("");
+        etPostcode.setText("");
+        btnSaveAddress.setText("Save Address");
+        showForm(false);
+    }
+
+    private void showForm(boolean isVisible) {
+        layoutAddressForm.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        btnShowAddForm.setVisibility(isVisible ? View.GONE : View.VISIBLE);
+    }
+
     private void checkLocationPermissions() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            locationPermissionLauncher.launch(new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-            });
+            locationPermissionLauncher.launch(new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
         } else {
             getCurrentLocation();
         }
@@ -162,11 +218,7 @@ public class AddressFragment extends Fragment {
 
     private void getCurrentLocation() {
         LocationUtils.getCurrentLocation(requireContext(), location -> {
-            if (location != null) {
-                reverseGeocode(location.getLatitude(), location.getLongitude());
-            } else {
-                Toast.makeText(getContext(), "Unable to retrieve location.", Toast.LENGTH_SHORT).show();
-            }
+            if (location != null) reverseGeocode(location.getLatitude(), location.getLongitude());
         });
     }
 
@@ -178,86 +230,28 @@ public class AddressFragment extends Fragment {
                 Address addr = addresses.get(0);
                 etCountry.setText(addr.getCountryName());
                 etCounty.setText(addr.getAdminArea());
-
-                String city = addr.getLocality();
-                if (city == null || city.isEmpty()) city = addr.getSubAdminArea();
-                etCity.setText(city != null ? city : "");
-
+                etCity.setText(addr.getLocality() != null ? addr.getLocality() : addr.getSubAdminArea());
                 etStreet.setText(addr.getThoroughfare());
                 etPostcode.setText(addr.getPostalCode());
-
-                Toast.makeText(getContext(), "Address updated from GPS", Toast.LENGTH_SHORT).show();
             }
         } catch (IOException e) {
-            Log.e("AddressFragment", "Geocoder failed", e);
+            e.printStackTrace();
         }
     }
 
-    private void saveAddressToDatabase() {
-        // Immediate feedback so you know the button actually clicked
-        Toast.makeText(getContext(), "Processing...", Toast.LENGTH_SHORT).show();
-
-        String uid = FirebaseAuth.getInstance().getUid();
-        if (uid == null) {
-            Toast.makeText(getContext(), "Error: You must be logged in to save.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        // FORCE the address list listener to connect if it failed during page load
-        if (userAddressesRef == null) {
-            userAddressesRef = FirebaseDatabase.getInstance().getReference("users").child(uid).child("addresses");
-            loadSavedAddresses();
-        }
-
-        String country = etCountry.getText().toString().trim();
-        String county = etCounty.getText().toString().trim();
-        String city = etCity.getText().toString().trim();
-        String street = etStreet.getText().toString().trim();
-        String postcode = etPostcode.getText().toString().trim();
-
-        if (country.isEmpty() && county.isEmpty()) {
-            Toast.makeText(getContext(), "Please enter at least a Country or a County/State", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Map<String, Object> addressMap = new HashMap<>();
-        addressMap.put("country", country);
-        addressMap.put("county", county);
-        addressMap.put("city", city);
-        addressMap.put("street", street);
-        addressMap.put("postcode", postcode);
-
-        // OPTIMISTIC UPDATE: Hide the form and clear text instantly.
-        layoutAddressForm.setVisibility(View.GONE);
-        btnShowAddForm.setVisibility(View.VISIBLE);
-        etCountry.setText("");
-        etCounty.setText("");
-        etCity.setText("");
-        etStreet.setText("");
-        etPostcode.setText("");
-
-        // PUSH to Firebase (Using CompletionListener for better error handling)
-        userAddressesRef.push().setValue(addressMap, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                if (error != null) {
-                    Log.e("AddressFragment", "Firebase Error", error.toException());
-                    // If it fails, show the error
-                    Toast.makeText(getContext(), "Cloud Save Failed: " + error.getMessage(), Toast.LENGTH_LONG).show();
-                } else {
-                    // Success!
-                    Toast.makeText(getContext(), "Address saved to Address Book!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
-    // --- INNER CLASS FOR RECYCLERVIEW ADAPTER ---
+    // --- Adapter Implementation ---
     public static class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressViewHolder> {
-        private final List<String> addresses;
+        private final List<AddressModel> addressList;
+        private final OnAddressClickListener listener;
 
-        public AddressAdapter(List<String> addresses) {
-            this.addresses = addresses;
+        public interface OnAddressClickListener {
+            void onEditClick(AddressModel address);
+            void onDeleteClick(AddressModel address);
+        }
+
+        public AddressAdapter(List<AddressModel> addressList, OnAddressClickListener listener) {
+            this.addressList = addressList;
+            this.listener = listener;
         }
 
         @NonNull
@@ -269,19 +263,25 @@ public class AddressFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull AddressViewHolder holder, int position) {
-            holder.tvAddressSummary.setText(addresses.get(position));
+            AddressModel address = addressList.get(position);
+            holder.tvAddressSummary.setText(address.getFullAddress());
+            holder.btnEdit.setOnClickListener(v -> listener.onEditClick(address));
+            holder.btnDelete.setOnClickListener(v -> listener.onDeleteClick(address));
         }
 
         @Override
         public int getItemCount() {
-            return addresses.size();
+            return addressList.size();
         }
 
         public static class AddressViewHolder extends RecyclerView.ViewHolder {
             TextView tvAddressSummary;
+            ImageButton btnEdit, btnDelete;
             public AddressViewHolder(@NonNull View itemView) {
                 super(itemView);
                 tvAddressSummary = itemView.findViewById(R.id.tvAddressSummary);
+                btnEdit = itemView.findViewById(R.id.btnEditAddress);
+                btnDelete = itemView.findViewById(R.id.btnDeleteAddress);
             }
         }
     }
