@@ -1,14 +1,12 @@
 package com.example.reloop.repository;
 
 import androidx.annotation.NonNull;
-
 import com.example.reloop.models.Product;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,11 +20,11 @@ public class ProductRepository {
     }
 
     public void getAllProducts(DataCallback callback) {
-        productsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        // Real-time listener handles slow network connections on tablets/emulators
+        productsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<Product> products = new ArrayList<>();
-
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Product product = snapshot.getValue(Product.class);
                     if (product != null) {
@@ -34,7 +32,6 @@ public class ProductRepository {
                         products.add(product);
                     }
                 }
-
                 callback.onSuccess(products);
             }
 
@@ -51,7 +48,6 @@ public class ProductRepository {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         List<Product> products = new ArrayList<>();
-
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             Product product = snapshot.getValue(Product.class);
                             if (product != null) {
@@ -59,7 +55,6 @@ public class ProductRepository {
                                 products.add(product);
                             }
                         }
-
                         callback.onSuccess(products);
                     }
 
@@ -73,6 +68,7 @@ public class ProductRepository {
     public void addProduct(Product product, OperationCallback callback) {
         String key = productsRef.push().getKey();
         if (key != null) {
+            product.setPid(key);
             productsRef.child(key).setValue(product)
                     .addOnSuccessListener(aVoid -> callback.onSuccess())
                     .addOnFailureListener(e -> callback.onError(e.getMessage()));

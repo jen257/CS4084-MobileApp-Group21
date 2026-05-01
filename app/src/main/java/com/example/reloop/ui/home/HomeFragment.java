@@ -34,10 +34,6 @@ import com.google.android.gms.location.LocationServices;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * HomeFragment displays the main product feed with real-time search,
- * category navigation, and advanced filtering by price and proximity.
- */
 public class HomeFragment extends Fragment {
 
     private HomeViewModel viewModel;
@@ -47,33 +43,25 @@ public class HomeFragment extends Fragment {
     private final List<Product> allProducts = new ArrayList<>();
     private final List<Product> displayList = new ArrayList<>();
 
-    // Current filter states
     private String currentKeyword = "";
     private String currentCategory = "All";
     private Double currentMinPrice = null;
     private Double currentMaxPrice = null;
-    private int currentMaxDistance = 50; // Default filter radius: 50km
+    private int currentMaxDistance = 50;
 
-    // Location services components
     private double userLat = 0.0;
     private double userLng = 0.0;
     private FusedLocationProviderClient fusedLocationClient;
 
-    /**
-     * Modern Permission Request Launcher using the Activity Result API.
-     * Handles the asynchronous response for location permission requests.
-     */
     private final ActivityResultLauncher<String[]> locationPermissionRequest =
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
                 Boolean fineLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false);
                 Boolean coarseLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false);
 
-                if (fineLocationGranted != null && fineLocationGranted) {
-                    fetchCurrentLocation();
-                } else if (coarseLocationGranted != null && coarseLocationGranted) {
+                if ((fineLocationGranted != null && fineLocationGranted) || (coarseLocationGranted != null && coarseLocationGranted)) {
                     fetchCurrentLocation();
                 } else {
-                    Toast.makeText(getContext(), "Location access denied. Proximity filtering will be unavailable.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Location denied. Products will be shown without distance filtering.", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -85,24 +73,20 @@ public class HomeFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
-        // Initialize UI components
         setupProductRecycler(root);
         setupCategoryRecycler(root);
         setupSearchView(root);
         setupFilterButton(root);
 
-        // Verify and request necessary location permissions
-        checkLocationPermission();
-
+        // Start loading data immediately so the screen is not blank while waiting for permissions
         observeViewModel();
         viewModel.loadProducts();
+
+        checkLocationPermission();
 
         return root;
     }
 
-    /**
-     * Checks if location permissions are granted; otherwise, launches the request.
-     */
     private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fetchCurrentLocation();
@@ -114,23 +98,17 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    /**
-     * Fetches the last known location of the device to enable distance-based filtering.
-     */
     @SuppressLint("MissingPermission")
     private void fetchCurrentLocation() {
         fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
             if (location != null) {
                 userLat = location.getLatitude();
                 userLng = location.getLongitude();
-                applyFilters(); // Re-apply filters with live GPS coordinates
+                applyFilters();
             }
         });
     }
 
-    /**
-     * Configures the Search Bar functionality for real-time results.
-     */
     private void setupSearchView(View root) {
         SearchView searchView = root.findViewById(R.id.homeSearchView);
         if (searchView != null) {
@@ -152,9 +130,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    /**
-     * Initializes the Advanced Filter button to launch the FilterDialog.
-     */
     private void setupFilterButton(View root) {
         View btnFilter = root.findViewById(R.id.btnFilter);
         if (btnFilter != null) {
@@ -171,36 +146,25 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    /**
-     * Configures the main Product list RecyclerView.
-     */
     private void setupProductRecycler(View root) {
         RecyclerView recyclerView = root.findViewById(R.id.recycler_home_products);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // UPDATED: Passing TWO listeners to the adapter constructor
         productAdapter = new ProductAdapter(getContext(), displayList,
-                // 1. The Wishlist Button Click
-                product -> {},
-
-                // 2. The Whole Card Click (Navigates to details)
+                product -> { /* Wishlist logic handled inside adapter */ },
                 product -> {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("product", product);
-
                     try {
                         Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_productDetailFragment, bundle);
-                    } catch (IllegalArgumentException e) {
-                        Toast.makeText(getContext(), "Navigation error: check nav_graph action ID", Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Toast.makeText(getContext(), "Navigation failed", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
         recyclerView.setAdapter(productAdapter);
     }
 
-    /**
-     * Configures the horizontal Category navigation RecyclerView.
-     */
     private void setupCategoryRecycler(View root) {
         RecyclerView recyclerView = root.findViewById(R.id.recycler_categories);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -219,9 +183,6 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(categoryAdapter);
     }
 
-    /**
-     * Observes LiveData from the ViewModel to update the product list dynamically.
-     */
     private void observeViewModel() {
         viewModel.getProducts().observe(getViewLifecycleOwner(), products -> {
             if (products != null) {
@@ -237,25 +198,18 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    /**
-     * Core Logic: Aggregates Keyword, Category, Price, and Distance constraints
-     * to determine which products to display in the UI.
-     */
     private void applyFilters() {
         displayList.clear();
 
         for (Product product : allProducts) {
-            // 1. Filter by Category
             if (!currentCategory.equals("All") && product.getCategory() != null) {
                 if (!product.getCategory().equalsIgnoreCase(currentCategory)) continue;
             }
 
-            // 2. Filter by Keyword (Title search)
             if (!currentKeyword.isEmpty()) {
                 if (product.getTitle() == null || !product.getTitle().toLowerCase().contains(currentKeyword.toLowerCase())) continue;
             }
 
-            // 3. Filter by Price Range
             if (currentMinPrice != null || currentMaxPrice != null) {
                 try {
                     double pPrice = product.getPriceAsDouble();
@@ -264,8 +218,8 @@ public class HomeFragment extends Fragment {
                 } catch (Exception e) { continue; }
             }
 
-            // 4. Filter by Distance (Requires device GPS coordinates)
-            if (product.getLatitude() != 0.0 && product.getLongitude() != 0.0) {
+            // Only filter by distance if location data is available
+            if (userLat != 0.0 && userLng != 0.0 && product.getLatitude() != 0.0 && product.getLongitude() != 0.0) {
                 double distance = LocationUtils.calculateDistance(userLat, userLng, product.getLatitude(), product.getLongitude());
                 if (distance > currentMaxDistance) continue;
             }
@@ -273,7 +227,6 @@ public class HomeFragment extends Fragment {
             displayList.add(product);
         }
 
-        // Notify the adapter to refresh the UI with new filtered results
         if (productAdapter != null) {
             productAdapter.notifyDataSetChanged();
         }
