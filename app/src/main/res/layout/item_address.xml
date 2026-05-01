@@ -5,8 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="#FFF7E0"
+    app:strokeWidth="0dp"
+    app:cardForegroundColor="@android:color/transparent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,6 +27,7 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
+        <!-- Edit Button -->
         <ImageButton
             android:id="@+id/btnEditAddress"
             android:layout_width="40dp"
@@ -32,6 +36,7 @@
             android:src="@android:drawable/ic_menu_edit"
             app:tint="#666666" />
 
+        <!-- Delete Button -->
         <ImageButton
             android:id="@+id/btnDeleteAddress"
             android:layout_width="40dp"
