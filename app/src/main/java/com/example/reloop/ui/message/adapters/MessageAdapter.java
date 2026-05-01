@@ -18,11 +18,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private List<Message> messages;
     private String currentUserId;
+    private String partnerName;
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
-    public MessageAdapter(List<Message> messages, String currentUserId) {
+    public MessageAdapter(List<Message> messages, String currentUserId, String partnerName) {
         this.messages = messages;
         this.currentUserId = currentUserId;
+        this.partnerName = partnerName;
     }
 
     @Override
@@ -49,14 +51,12 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (holder instanceof SentMessageViewHolder) {
             ((SentMessageViewHolder) holder).bind(message);
         } else {
-            ((ReceivedMessageViewHolder) holder).bind(message);
+            ((ReceivedMessageViewHolder) holder).bind(message, partnerName);
         }
     }
 
     @Override
-    public int getItemCount() {
-        return messages.size();
-    }
+    public int getItemCount() { return messages.size(); }
 
     public void setMessages(List<Message> messages) {
         this.messages = messages;
@@ -76,7 +76,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         void bind(Message message) {
             messageText.setText(message.getContent());
-            // Safe binding to prevent null timestamp crash
             if (message.getTimestamp() != null) {
                 timeText.setText(timeFormat.format(message.getTimestamp()));
             } else {
@@ -97,10 +96,14 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             this.timeFormat = format;
         }
 
-        void bind(Message message) {
+        void bind(Message message, String partnerName) {
             messageText.setText(message.getContent());
-            senderName.setText(message.getSenderName() != null ? message.getSenderName() : "User");
-            // Safe binding to prevent null timestamp crash
+            if (partnerName != null && !partnerName.isEmpty()) {
+                senderName.setText(partnerName);
+            } else {
+                senderName.setText(message.getSenderName() != null ? message.getSenderName() : "User");
+            }
+
             if (message.getTimestamp() != null) {
                 timeText.setText(timeFormat.format(message.getTimestamp()));
             } else {

@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -40,10 +39,8 @@ public class ChatFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Initialize the header view first
         tvChatPartnerName = view.findViewById(R.id.tvChatPartnerName);
 
-        // 2. Get data from arguments
         if (getArguments() != null) {
             conversationId = getArguments().getString("conversationId");
             currentUserId = getArguments().getString("currentUserId");
@@ -52,7 +49,6 @@ public class ChatFragment extends Fragment {
             otherUserName = getArguments().getString("otherUserName");
         }
 
-        // 3. Set the username to the header
         if (tvChatPartnerName != null) {
             tvChatPartnerName.setText(otherUserName != null ? otherUserName : "Chat");
         }
@@ -84,7 +80,7 @@ public class ChatFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        messageAdapter = new MessageAdapter(new ArrayList<>(), currentUserId);
+        messageAdapter = new MessageAdapter(new ArrayList<>(), currentUserId, otherUserName);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setStackFromEnd(true);
         messagesRecyclerView.setLayoutManager(layoutManager);

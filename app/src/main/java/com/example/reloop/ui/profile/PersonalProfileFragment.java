@@ -2,6 +2,7 @@ package com.example.reloop.ui.profile;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.example.reloop.R;
+import com.example.reloop.models.AddressModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,22 +37,20 @@ import java.util.Map;
 
 public class PersonalProfileFragment extends Fragment {
 
-    private TextInputEditText etUsername, etEmail, etPassword, etBio, etAddress;
-    private ImageView ivProfileAvatar;
-    private MaterialButton btnSaveProfile;
-
-    private Uri selectedImageUri;
-    private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
+    private TextInputEditText etUsername, etEmail, etBio, etAddress;
+    private MaterialButton btnSave;
+    private ImageView ivAvatar;
     private DatabaseReference userRef;
+    private FirebaseUser currentUser;
+    private String uid;
+    private Uri selectedImageUri;
 
-    // Image Picker for Avatar
     private final ActivityResultLauncher<String> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
                     selectedImageUri = uri;
-                    ivProfileAvatar.setImageURI(uri);
+                    ivAvatar.setImageURI(uri);
                 }
             }
     );
@@ -64,130 +64,120 @@ public class PersonalProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
-
-        if (currentUser != null) {
-            userRef = FirebaseDatabase.getInstance().getReference("users").child(currentUser.getUid());
-        }
-
-        // Bind Views from fragment_personal_profile.xml
-        ivProfileAvatar = view.findViewById(R.id.iv_profile_avatar);
         etUsername = view.findViewById(R.id.et_profile_username);
         etEmail = view.findViewById(R.id.et_profile_email);
-        etPassword = view.findViewById(R.id.et_profile_password);
         etBio = view.findViewById(R.id.et_profile_bio);
         etAddress = view.findViewById(R.id.et_profile_address);
-        btnSaveProfile = view.findViewById(R.id.btn_save_profile);
+        btnSave = view.findViewById(R.id.btn_save_profile);
+        ivAvatar = view.findViewById(R.id.iv_profile_avatar);
 
-        // Click listeners for navigation on read-only fields
-        etEmail.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.action_personalProfileFragment_to_securityFragment));
-        etPassword.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.action_personalProfileFragment_to_securityFragment));
-        etAddress.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.action_personalProfileFragment_to_addressFragment));
-
-        // Load data initially
-        loadProfileData();
-
-        // Avatar change click
-        view.findViewById(R.id.layout_change_avatar).setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
-
-        // Save button click
-        btnSaveProfile.setOnClickListener(v -> saveProfileChanges());
-    }
-
-    private void loadProfileData() {
-        if (currentUser == null) return;
-
-        // Load Auth info
-        etEmail.setText(currentUser.getEmail());
-        etPassword.setText("••••••••");
-
-        if (currentUser.getPhotoUrl() != null) {
-            Glide.with(this).load(currentUser.getPhotoUrl()).circleCrop().into(ivProfileAvatar);
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            uid = currentUser.getUid();
+            userRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
+            loadUserProfile();
         }
 
-        // Fetch real-time data (Username, Bio, Address) from Database
-        if (userRef != null) {
-            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        String dbUsername = snapshot.child("username").getValue(String.class);
-                        String dbBio = snapshot.child("bio").getValue(String.class);
-                        String dbAddress = snapshot.child("address").getValue(String.class);
+        View layoutChangeAvatar = view.findViewById(R.id.layout_change_avatar);
+        layoutChangeAvatar.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
 
-                        etUsername.setText(dbUsername != null ? dbUsername : currentUser.getDisplayName());
-                        etBio.setText(dbBio != null ? dbBio : "");
-                        etAddress.setText(dbAddress != null ? dbAddress : "No address set");
-                    }
+        etAddress.setOnClickListener(v ->
+                Navigation.findNavController(view).navigate(R.id.action_personalProfileFragment_to_addressFragment)
+        );
+
+        btnSave.setOnClickListener(v -> saveProfileChanges());
+    }
+
+    private void loadUserProfile() {
+        if (currentUser != null) {
+            etEmail.setText(currentUser.getEmail());
+            if (currentUser.getPhotoUrl() != null) {
+                Glide.with(this).load(currentUser.getPhotoUrl()).circleCrop().into(ivAvatar);
+            }
+        }
+
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!isAdded()) return;
+
+                etUsername.setText(snapshot.child("username").getValue(String.class));
+                etBio.setText(snapshot.child("bio").getValue(String.class));
+
+                String defaultAddrKey = snapshot.child("defaultAddressKey").getValue(String.class);
+                if (defaultAddrKey != null) {
+                    loadAddressDetails(defaultAddrKey);
                 }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(getContext(), "Error loading profile", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
-
-    private void saveProfileChanges() {
-        String newName = etUsername.getText().toString().trim();
-        String newBio = etBio.getText().toString().trim();
-
-        if (newName.isEmpty()) {
-            etUsername.setError("Username is required");
-            return;
-        }
-
-        btnSaveProfile.setEnabled(false);
-        btnSaveProfile.setText("Saving...");
-
-        if (selectedImageUri != null) {
-            uploadAvatarAndSave(newName, newBio);
-        } else {
-            updateFirebaseProfile(newName, newBio, currentUser.getPhotoUrl());
-        }
-    }
-
-    private void uploadAvatarAndSave(String name, String bio) {
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference()
-                .child("profile_pics/" + currentUser.getUid() + ".jpg");
-
-        storageRef.putFile(selectedImageUri).addOnSuccessListener(taskSnapshot ->
-                storageRef.getDownloadUrl().addOnSuccessListener(uri ->
-                        updateFirebaseProfile(name, bio, uri)
-                )
-        ).addOnFailureListener(e -> {
-            btnSaveProfile.setEnabled(true);
-            btnSaveProfile.setText("Save Changes");
-            Toast.makeText(getContext(), "Avatar upload failed", Toast.LENGTH_SHORT).show();
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 
-    private void updateFirebaseProfile(String name, String bio, Uri photoUri) {
-        // 1. Update Auth Profile
+    private void loadAddressDetails(String key) {
+        userRef.child("addresses").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                AddressModel address = snapshot.getValue(AddressModel.class);
+                if (address != null && isAdded()) {
+                    etAddress.setText(address.getFullAddress());
+                }
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+
+    private void saveProfileChanges() {
+        String name = etUsername.getText().toString().trim();
+        String bio = etBio.getText().toString().trim();
+
+        if (name.isEmpty()) {
+            etUsername.setError("Username required");
+            return;
+        }
+
+        btnSave.setEnabled(false);
+        btnSave.setText("Updating...");
+
+        if (selectedImageUri != null) {
+            uploadImageAndSave(name, bio);
+        } else {
+            updateFirebaseData(name, bio, currentUser.getPhotoUrl());
+        }
+    }
+
+    private void uploadImageAndSave(String name, String bio) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference()
+                .child("profile_pics/" + uid + ".jpg");
+
+        storageRef.putFile(selectedImageUri).addOnSuccessListener(taskSnapshot ->
+                storageRef.getDownloadUrl().addOnSuccessListener(uri ->
+                        updateFirebaseData(name, bio, uri)
+                )
+        ).addOnFailureListener(e -> {
+            btnSave.setEnabled(true);
+            btnSave.setText("Save Changes");
+            Toast.makeText(getContext(), "Upload failed", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void updateFirebaseData(String name, String bio, Uri photoUri) {
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(name)
                 .setPhotoUri(photoUri)
                 .build();
 
         currentUser.updateProfile(profileUpdates).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                // 2. Update Realtime Database
-                Map<String, Object> updates = new HashMap<>();
-                updates.put("username", name);
-                updates.put("bio", bio);
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("username", name);
+            updates.put("bio", bio);
 
-                userRef.updateChildren(updates).addOnCompleteListener(dbTask -> {
-                    btnSaveProfile.setEnabled(true);
-                    btnSaveProfile.setText("Save Changes");
-                    if (dbTask.isSuccessful()) {
-                        Toast.makeText(getContext(), "Profile Updated Successfully", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } else {
-                btnSaveProfile.setEnabled(true);
-                btnSaveProfile.setText("Save Changes");
-            }
+            userRef.updateChildren(updates).addOnCompleteListener(dbTask -> {
+                btnSave.setEnabled(true);
+                btnSave.setText("Save Changes");
+                if (dbTask.isSuccessful()) {
+                    Toast.makeText(getContext(), "Profile Updated", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 }
