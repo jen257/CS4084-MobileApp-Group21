@@ -6,44 +6,36 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.reloop.models.Product;
-import com.example.reloop.utils.FireBaseHelper;
+import com.example.reloop.repository.ProductRepository;
 import com.example.reloop.shared.BaseViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ViewModel for managing product data and filtering logic
- */
 public class HomeViewModel extends BaseViewModel {
 
     private final MutableLiveData<List<Product>> productList = new MutableLiveData<>();
-    private final FireBaseHelper firebaseHelper;
+    private final ProductRepository productRepository;
 
-    // Store original unfiltered data
     private List<Product> originalList;
-
-    // Current selected category
     private String currentCategory = "All";
 
     public HomeViewModel() {
-        firebaseHelper = new FireBaseHelper();
+        productRepository = new ProductRepository();
     }
 
-    /**
-     * Load products from Firebase
-     */
     public void loadProducts() {
         setLoading(true);
         clearMessages();
 
-        firebaseHelper.getAllProducts(new FireBaseHelper.FirebaseCallback() {
+        // Use the proper repository method that sets the PID
+        productRepository.getAllProducts(new ProductRepository.DataCallback() {
             @Override
             public void onSuccess(List<Product> products) {
                 setLoading(false);
                 if (products != null) {
                     Log.d("HomeViewModel", "Loaded " + products.size() + " products");
-                    originalList = products; // Save original list
+                    originalList = products;
                     productList.setValue(products);
                 }
             }
@@ -56,24 +48,15 @@ public class HomeViewModel extends BaseViewModel {
         });
     }
 
-    /**
-     * Return LiveData of product list
-     */
     public LiveData<List<Product>> getProducts() {
         return productList;
     }
 
-    /**
-     * Filter products by selected category
-     */
     public void filterByCategory(String category) {
         currentCategory = category;
         applyFilter();
     }
 
-    /**
-     * Apply category filtering logic
-     */
     private void applyFilter() {
         if (originalList == null) return;
 

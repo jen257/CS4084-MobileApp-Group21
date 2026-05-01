@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -66,10 +69,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             holder.imgProduct.setImageResource(android.R.drawable.ic_menu_gallery);
         }
 
-        // Check initial wishlist state to display correct heart icon
+        // Use Handler for safe UI updates instead of Context casting
         Executors.newSingleThreadExecutor().execute(() -> {
             boolean exists = AppDataBase.getInstance(context).productDao().isProductInWishlist(p.getPid());
-            ((android.app.Activity) context).runOnUiThread(() -> updateHeartIcon(holder.btnWant, exists));
+            new Handler(Looper.getMainLooper()).post(() -> updateHeartIcon(holder.btnWant, exists));
         });
 
         // "Want" button click logic
@@ -90,8 +93,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
      * @param product
      * @param holder
      */
+
     private void toggleWishlist(Product product, ProductViewHolder holder) {
         Executors.newSingleThreadExecutor().execute(() -> {
+            Handler mainHandler = new Handler(Looper.getMainLooper());
             try {
                 ProductEntity entity = ProductEntity.fromCloudProduct(product);
                 AppDataBase db = AppDataBase.getInstance(context);
@@ -101,14 +106,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
                 if (!exists) {
                     dao.insert(entity);
-                    ((android.app.Activity) context).runOnUiThread(() -> {
+                    mainHandler.post(() -> {
                         Toast.makeText(context, "Added to wishlist!", Toast.LENGTH_SHORT).show();
                         updateHeartIcon(holder.btnWant, true);
                     });
                 } else {
                     dao.deleteById(product.getPid());
-
-                    ((android.app.Activity) context).runOnUiThread(() -> {
+                    mainHandler.post(() -> {
                         Toast.makeText(context, "Removed from wishlist", Toast.LENGTH_SHORT).show();
                         updateHeartIcon(holder.btnWant, false);
                     });
@@ -116,8 +120,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
             } catch (Exception e) {
                 e.printStackTrace();
-                ((android.app.Activity) context).runOnUiThread(() ->
-                        Toast.makeText(context, "Failed to update wishlist", Toast.LENGTH_SHORT).show());
+                mainHandler.post(() ->
+                        Toast.makeText(context, "Failed to update wishlist", Toast.LENGTH_SHORT).show()
+                );
             }
         });
     }
