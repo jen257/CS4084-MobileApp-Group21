@@ -23,6 +23,9 @@ public class ProfileViewModel extends BaseViewModel {
         return currentUser;
     }
 
+    /**
+     * Fetch the current authenticated user from the repository.
+     */
     public void loadUserProfile() {
         FirebaseUser user = authRepository.getCurrentUser();
         if (user != null) {

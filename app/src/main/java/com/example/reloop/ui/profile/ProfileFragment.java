@@ -19,12 +19,16 @@ import com.example.reloop.ui.profile.viewmodel.ProfileViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * Fragment responsible for displaying user profile information
+ * and navigation to related settings or features.
+ */
 public class ProfileFragment extends Fragment {
 
     private ProfileViewModel profileViewModel;
 
     // UI Components
-    private TextView tvUserName, tvUserEmail, tvEditProfile;
+    private TextView tvUserEmail, tvEditProfile;
     private TextView tvSelling, tvSold, tvMyWishlist, tvSettings;
     private ImageView ivAvatar;
 
@@ -39,8 +43,7 @@ public class ProfileFragment extends Fragment {
 
         profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 
-        // Bind all UI components
-        tvUserName = view.findViewById(R.id.tvUserName);
+        // Bind UI components
         tvUserEmail = view.findViewById(R.id.tvUserEmail);
         tvEditProfile = view.findViewById(R.id.tvEditProfile);
         tvSelling = view.findViewById(R.id.tvSelling);
@@ -50,51 +53,62 @@ public class ProfileFragment extends Fragment {
         ivAvatar = view.findViewById(R.id.ivAvatar);
 
         loadUserData();
+        setupObservers();
         setupListeners();
     }
 
     private void loadUserData() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            String displayName = user.getDisplayName();
-            if (tvUserName != null) {
-                tvUserName.setText((displayName != null && !displayName.isEmpty())
-                        ? displayName : "Add Username");
-            }
-
             if (tvUserEmail != null) {
-                tvUserEmail.setText(user.getEmail());
+                String displayName = user.getDisplayName();
+                if (displayName != null && !displayName.isEmpty()) {
+                    tvUserEmail.setText(displayName);
+                } else {
+                    tvUserEmail.setText(user.getEmail());
+                }
             }
 
             if (ivAvatar != null && user.getPhotoUrl() != null) {
                 Glide.with(this)
                         .load(user.getPhotoUrl())
-                        .placeholder(R.drawable.img_profile)
+                        .placeholder(R.drawable.ic_launcher_foreground)
                         .circleCrop()
                         .into(ivAvatar);
             }
         }
     }
 
+    private void setupObservers() {
+        profileViewModel.getCurrentUser().observe(getViewLifecycleOwner(), firebaseUser -> {
+        });
+    }
+
     private void setupListeners() {
         tvEditProfile.setOnClickListener(v ->
-                Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_editProfileFragment)
+                Toast.makeText(getContext(), "Edit Profile coming soon", Toast.LENGTH_SHORT).show()
         );
 
-        tvSelling.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Items on sell coming soon", Toast.LENGTH_SHORT).show()
-        );
+        // Navigate to UserProductsFragment, passing showSoldItems = false
+        tvSelling.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("showSoldItems", false);
+            Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_userProductsFragment, bundle);
+        });
 
-        tvSold.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Sold items coming soon", Toast.LENGTH_SHORT).show()
-        );
+        // Navigate to UserProductsFragment, passing showSoldItems = true
+        tvSold.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("showSoldItems", true);
+            Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_userProductsFragment, bundle);
+        });
 
         tvMyWishlist.setOnClickListener(v ->
-                Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_wishlistFragment)
+                Navigation.findNavController(v).navigate(R.id.wishlistFragment)
         );
 
         tvSettings.setOnClickListener(v ->
-                Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_settingsFragment)
+                Navigation.findNavController(requireView()).navigate(R.id.action_profileFragment_to_settingsFragment)
         );
     }
 }

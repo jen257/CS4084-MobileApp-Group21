@@ -34,9 +34,18 @@ public class HomeViewModel extends BaseViewModel {
             public void onSuccess(List<Product> products) {
                 setLoading(false);
                 if (products != null) {
-                    Log.d("HomeViewModel", "Loaded " + products.size() + " products");
-                    originalList = products;
-                    productList.setValue(products);
+                    List<Product> activeProducts = new ArrayList<>();
+
+                    // Filter out Sold or Removed products from the source
+                    for (Product p : products) {
+                        if (!p.isSold() && !p.isRemoved()) {
+                            activeProducts.add(p);
+                        }
+                    }
+
+                    Log.d("HomeViewModel", "Loaded " + activeProducts.size() + " active products");
+                    originalList = activeProducts;
+                    productList.setValue(activeProducts);
                 }
             }
 

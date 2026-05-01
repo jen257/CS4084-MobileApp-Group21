@@ -81,6 +81,16 @@ public class ProductRepository {
         }
     }
 
+    public void updateProduct(Product product, OperationCallback callback) {
+        if (product.getPid() != null) {
+            productsRef.child(product.getPid()).setValue(product)
+                    .addOnSuccessListener(aVoid -> callback.onSuccess())
+                    .addOnFailureListener(e -> callback.onError(e.getMessage()));
+        } else {
+            callback.onError("Invalid product ID");
+        }
+    }
+
     public interface DataCallback {
         void onSuccess(List<Product> products);
         void onError(String error);

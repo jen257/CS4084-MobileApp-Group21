@@ -119,12 +119,13 @@
                 android:textColor="#1A1A1A"
                 android:textSize="12sp" />
 
+            <!-- The fix is here: android:background="#F0F0F0" -->
             <EditText
                 android:id="@+id/etDescription"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
                 android:layout_marginTop="4dp"
-                android:background="@drawable/bg_search_white"
+                android:background="#F0F0F0"
                 android:gravity="top"
                 android:hint="Tell buyers about your item..."
                 android:importantForAutofill="no"

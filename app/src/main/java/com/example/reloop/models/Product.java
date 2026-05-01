@@ -15,7 +15,9 @@ public class Product implements Serializable {
     public String imageUrl;     // URL for the product image hosted on Firebase/Web
     public String price;        // Price stored as String to handle currency formatting
     public String category;     // Item category (e.g., Electronics, Clothing)
-    public boolean isSold;      // Availability status (True if item is no longer for sale)
+
+    public boolean isSold;      // Availability status (True if item is successfully sold)
+    public boolean isRemoved;   // NEW: Availability status (True if item is taken down by seller)
 
     public Location location;   // Geographical location of the product (Legacy/Custom)
     public double latitude;
@@ -37,7 +39,10 @@ public class Product implements Serializable {
         this.imageUrl = imageUrl;
         this.sellerId = sellerId;
         this.location = location;
-        this.isSold = false; // Default status is always Available
+
+        this.isSold = false;
+        this.isRemoved = false; // NEW: Initialize to false
+
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -51,10 +56,11 @@ public class Product implements Serializable {
     public String getImageUrl() { return imageUrl; }
     public String getPrice() { return price; }
     public String getCategory() { return category; }
-    public boolean isSold() { return isSold; }
-    public Location getLocation() { return location; }
 
-    // New Coordinate Getters
+    public boolean isSold() { return isSold; }
+    public boolean isRemoved() { return isRemoved; } // NEW
+
+    public Location getLocation() { return location; }
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
 
@@ -65,10 +71,11 @@ public class Product implements Serializable {
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
     public void setPrice(String price) { this.price = price; }
     public void setCategory(String category) { this.category = category; }
-    public void setSold(boolean sold) { isSold = sold; }
-    public void setLocation(Location location) { this.location = location; }
 
-    // Coordinate Setters
+    public void setSold(boolean sold) { isSold = sold; }
+    public void setRemoved(boolean removed) { isRemoved = removed; } // NEW
+
+    public void setLocation(Location location) { this.location = location; }
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
 
@@ -89,8 +96,9 @@ public class Product implements Serializable {
         return price.startsWith("€") ? price : "€" + price;
     }
 
+    // Item is only available if it is neither sold nor removed
     public boolean isAvailable() {
-        return !isSold;
+        return !isSold && !isRemoved;
     }
 
     // ===== Standard Overrides =====
