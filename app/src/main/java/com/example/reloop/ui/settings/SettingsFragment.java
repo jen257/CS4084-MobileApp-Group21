@@ -7,11 +7,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+
 import com.example.reloop.R;
 import com.example.reloop.ui.settings.viewmodel.SettingsViewModel;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -54,25 +56,32 @@ public class SettingsFragment extends Fragment {
     }
 
     private void setupListeners() {
-        tvPersonalProfile.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Personal Profile coming soon", Toast.LENGTH_SHORT).show()
-        );
+        // Navigate to Personal Profile using the correct action ID from nav_graph
+        tvPersonalProfile.setOnClickListener(v -> {
+            try {
+                Navigation.findNavController(v).navigate(R.id.action_settingsFragment_to_personalProfileFragment);
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(getContext(), "Navigation error: check nav_graph actions", Toast.LENGTH_SHORT).show();
+            }
+        });
 
+        // Navigates to Address Management
         tvAddressManagement.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Address Management coming soon", Toast.LENGTH_SHORT).show()
+                Navigation.findNavController(v).navigate(R.id.action_settingsFragment_to_addressFragment)
         );
 
+        // Navigates to Security Fragment
         tvAccountSecurity.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Account Security coming soon", Toast.LENGTH_SHORT).show()
+                Navigation.findNavController(v).navigate(R.id.action_settingsFragment_to_securityFragment)
         );
 
         switchNotifications.setOnCheckedChangeListener((buttonView, isChecked) ->
                 settingsViewModel.setNotifications(isChecked)
         );
 
-        // Perform FirebaseAuth sign out and navigate back to Login screen
         btnLogout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
+            // Navigate back to Login and clear the backstack
             Navigation.findNavController(requireView()).navigate(R.id.action_settingsFragment_to_loginFragment);
         });
     }

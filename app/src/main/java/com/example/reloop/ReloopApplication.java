@@ -4,11 +4,6 @@ import android.app.Application;
 import android.util.Log;
 
 import com.google.firebase.database.FirebaseDatabase;
-
-/**
- * [Member A - System Architect]
- * Global Application class for initializing core system configurations upon app launch.
- */
 public class ReloopApplication extends Application {
 
     private static final String TAG = "ReloopApplication";
@@ -17,9 +12,6 @@ public class ReloopApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        // [Day 5 Bug Fix] Enable Firebase Disk Persistence globally.
-        // This ensures data remains accessible during unstable network conditions (Offline Support).
-        // CRITICAL: This must be called before any other Firebase Database references are created.
         try {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             Log.d(TAG, "Firebase offline persistence enabled successfully.");

@@ -190,7 +190,7 @@ public class MessageService {
     }
 
     private void buildAndSendFCMRequest(String targetToken, String title, String body) {
-        if (FCM_SERVER_KEY.equals("YOUR_FCM_SERVER_KEY_HERE")) return;
+        if (FCM_SERVER_KEY.equals("AIzaSyBOIjJ-zZION6Wh3F_NZK_cn3AscTakips")) return;
 
         String jsonPayload = "{"
                 + "\"to\": \"" + targetToken + "\","

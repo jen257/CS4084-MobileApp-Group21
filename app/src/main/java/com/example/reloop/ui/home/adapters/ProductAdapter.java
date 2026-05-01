@@ -66,7 +66,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             holder.imgProduct.setImageResource(android.R.drawable.ic_menu_gallery);
         }
 
-        // --- NEW: Check initial wishlist state to display correct heart icon ---
+        // Check initial wishlist state to display correct heart icon
         Executors.newSingleThreadExecutor().execute(() -> {
             boolean exists = AppDataBase.getInstance(context).productDao().isProductInWishlist(p.getPid());
             ((android.app.Activity) context).runOnUiThread(() -> updateHeartIcon(holder.btnWant, exists));
@@ -86,6 +86,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         return productList.size();
     }
 
+    /**
+     * @param product
+     * @param holder
+     */
     private void toggleWishlist(Product product, ProductViewHolder holder) {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
@@ -99,16 +103,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                     dao.insert(entity);
                     ((android.app.Activity) context).runOnUiThread(() -> {
                         Toast.makeText(context, "Added to wishlist!", Toast.LENGTH_SHORT).show();
-                        // FIXED: Use holder.btnWant instead of buttonToUpdate
                         updateHeartIcon(holder.btnWant, true);
                     });
                 } else {
-                    // UNSAVE logic: Delete using the faster deleteById method
                     dao.deleteById(product.getPid());
 
                     ((android.app.Activity) context).runOnUiThread(() -> {
                         Toast.makeText(context, "Removed from wishlist", Toast.LENGTH_SHORT).show();
-                        // FIXED: Use holder.btnWant instead of buttonToUpdate
                         updateHeartIcon(holder.btnWant, false);
                     });
                 }
