@@ -5,63 +5,60 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="32dp"
-    android:gravity="center">
+    android:gravity="center"
+    android:background="@color/brand_yellow">
 
+    <!-- Title -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Register"
-        tools:ignore="HardcodedText"
-        android:textColor="#000000"
+        android:textColor="@color/brand_black"
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="32dp"/>
 
+    <!-- Email -->
     <EditText
         android:id="@+id/etEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="48dp"
         android:hint="Email"
-        android:textColor="#000000"
-        android:textColorHint="#5A5A5A"
-        tools:ignore="HardcodedText"
-        android:inputType="textEmailAddress"
-        android:autofillHints="emailAddress"
+        android:textColor="@color/brand_black"
+        android:textColorHint="#424242"
         android:layout_marginBottom="16dp"/>
 
+    <!-- Password -->
     <EditText
         android:id="@+id/etPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="48dp"
         android:hint="Password"
-        android:textColor="#000000"
-        android:textColorHint="#5A5A5A"
-        tools:ignore="HardcodedText"
-        android:inputType="textPassword"
-        android:autofillHints="password"
+        android:textColor="@color/brand_black"
+        android:textColorHint="#424242"
         android:layout_marginBottom="16dp"/>
 
+    <!-- Confirm Password -->
     <EditText
         android:id="@+id/etConfirmPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="48dp"
         android:hint="Confirm Password"
-        android:textColor="#000000"
-        android:textColorHint="#5A5A5A"
-        tools:ignore="HardcodedText"
-        android:inputType="textPassword"
-        android:autofillHints="password"
+        android:textColor="@color/brand_black"
+        android:textColorHint="#424242"
         android:layout_marginBottom="24dp"/>
 
+    <!-- Button -->
     <com.example.reloop.shared.views.LoadingButton
         android:id="@+id/btnRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"/>
 
+    <!-- Link -->
     <TextView
         android:id="@+id/tvGoToLogin"
         android:layout_width="wrap_content"
@@ -69,8 +66,7 @@
         android:minHeight="48dp"
         android:gravity="center_vertical"
         android:text="Already have an account? Login"
-        tools:ignore="HardcodedText"
-        android:textColor="#004085"
+        android:textColor="@color/brand_black"
         android:layout_marginTop="16dp"/>
 
 </LinearLayout>
