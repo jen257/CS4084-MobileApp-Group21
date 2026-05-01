@@ -129,6 +129,18 @@
                 android:textSize="14sp"
                 android:padding="12dp" />
 
+            <!-- Contact Sellers -->
+            <Button
+                android:id="@+id/btnMessageSeller"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Message Seller"
+                android:backgroundTint="#4CAF50"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

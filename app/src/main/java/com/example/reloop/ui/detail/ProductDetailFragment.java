@@ -16,6 +16,12 @@ import com.bumptech.glide.Glide;
 import com.example.reloop.R;
 import com.example.reloop.models.Product;
 
+import android.widget.Button;
+import android.widget.Toast;
+import androidx.navigation.Navigation;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 /**
  * ProductDetailFragment
  * Displays full product details in read-only mode.
@@ -25,7 +31,7 @@ public class ProductDetailFragment extends Fragment {
 
     private ImageView ivProductImage;
     private TextView tvTitle, tvCategory, tvPrice, tvDescription;
-
+    private Button btnMessageSeller;
     private Product product;
 
     @Nullable
@@ -51,6 +57,7 @@ public class ProductDetailFragment extends Fragment {
         tvCategory = view.findViewById(R.id.tvCategory);
         tvPrice = view.findViewById(R.id.tvPrice);
         tvDescription = view.findViewById(R.id.tvDescription);
+        btnMessageSeller = view.findViewById(R.id.btnMessageSeller);
     }
 
     /**
@@ -84,6 +91,39 @@ public class ProductDetailFragment extends Fragment {
                     .into(ivProductImage);
         } else {
             ivProductImage.setImageResource(android.R.drawable.ic_menu_gallery);
+        }
+        if (btnMessageSeller != null) {
+            btnMessageSeller.setOnClickListener(v -> {
+
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (currentUser == null) {
+                    Toast.makeText(getContext(), "Please log in to message the seller", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                String currentUserId = currentUser.getUid();
+
+                String sellerId = product.getSellerId();
+
+
+                if (currentUserId.equals(sellerId)) {
+                    Toast.makeText(getContext(), "You cannot message yourself", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
+                Bundle args = new Bundle();
+                args.putString("receiverId", sellerId);
+
+                try {
+                    Navigation.findNavController(v).navigate(
+                            R.id.action_productDetailFragment_to_chatFragment,
+                            args
+                    );
+                } catch (IllegalArgumentException e) {
+                    Toast.makeText(getContext(), "Navigation action not found! Check nav_graph.xml", Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 }
