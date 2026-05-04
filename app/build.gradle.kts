@@ -9,12 +9,14 @@ android {
         baseline = file("lint-baseline.xml")
     }
     namespace = "com.example.reloop"
-    compileSdk = 36
+
+    // Set to 35 for compatibility with AGP 8.7.3 and chosen library versions
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.reloop"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -63,12 +65,11 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
 
-
     // Image Loading Library
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
-    //to use Picasso
+    // to use Picasso
     implementation("com.squareup.picasso:picasso:2.8")
 
     // Google Maps
@@ -82,4 +83,3 @@ dependencies {
     // Add FCM dependency
     implementation("com.google.firebase:firebase-messaging")
 }
-
